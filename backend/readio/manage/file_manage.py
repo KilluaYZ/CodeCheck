@@ -1,7 +1,9 @@
 """
 文件管理层，用于向上层提供透明的存储服务
 """
-from flask import Blueprint, request, send_file
+import os.path
+
+from flask import Blueprint, request, send_file, g, current_app
 import readio.database.connectPool
 from typing import BinaryIO
 from readio.database.SQLUtils import *
@@ -11,7 +13,7 @@ from readio.database.SQLUtils import *
 import struct
 import readio.utils.check as check
 from readio.utils.SourceCodeReader import SourceCodeReader
-from readio.utils.query_tools import __check_if_project_is_public_by_project_id, __get_project_by_project_id
+from readio.utils.query_tools import query_tool_check_if_project_is_public_by_project_id, query_tool_get_project_by_project_id
 bp = Blueprint('fileManage', __name__, url_prefix='/file')
 pooldb = readio.database.connectPool.pooldb
 BASE_FILE_STORE_DIR = './code_check_shower_server_data'
@@ -66,6 +68,8 @@ def __query_file_info_sql(query_param: dict) -> list:
     rows = execute_sql_query(pooldb, sql, tuple(arg_list))
     return rows
 
+def __get_project_root_path(projectId: str):
+    return os.path.join(BASE_FILE_STORE_DIR, projectId)
 
 def __get_file_path_by_file_info(file_info) -> str:
     """
@@ -77,10 +81,11 @@ def __get_file_path_by_file_info(file_info) -> str:
     file_path = file_info['filePath']
     file_name = file_info['fileName']
     file_type = file_info['fileType']
+    project_id = file_info['project_id']
     if file_type == 'directory':
-        return f"{BASE_FILE_STORE_DIR}/{file_path}/{file_name}"
+        return f"{__get_project_root_path(project_id)}/{file_path}/{file_name}"
     else:
-        return f"{BASE_FILE_STORE_DIR}/{file_path}/{file_name}.{file_type}"
+        return f"{__get_project_root_path(project_id)}/{file_path}/{file_name}.{file_type}"
 
 def __get_file_path_by_id(fileId: str) -> str:
     """
@@ -94,7 +99,7 @@ def __get_file_path_by_id(fileId: str) -> str:
     return __get_file_path_by_file_info(file_info)
 
 
-def __get_dir_type_file_path_by_project_id(project_id: str) -> str:
+def __get_dir_file_path_by_project_id(project_id: str) -> str:
     """
     根据项目id获取源码根目录路径
     """
@@ -112,8 +117,24 @@ def __get_text_file_content_by_id(fileId: str) -> str:
     """
     file_path = __get_file_path_by_id(fileId)
 
+def __mkdir_project_directory_if_not_exist(projectId: str):
+    project_root_path = __get_project_root_path(projectId)
+    src_path = os.path.join(project_root_path, 'src')
+    json_path = os.path.join(project_root_path, 'json')
+    zip_path = os.path.join(project_root_path, 'zip')
+
+    if not os.path.exists(project_root_path):
+        os.mkdir(project_root_path)
+    if not os.path.exists(src_path):
+        os.mkdir(src_path)
+    if not os.path.exists(json_path):
+        os.mkdir(json_path)
+    if not os.path.exists(zip_path):
+        os.mkdir(zip_path)
+
+
 @bp.route('/getFile',methods=['POST'])
-def __get_file():
+def get_file():
     try:
         project_id = request.json.get("projectId")
         file_path = request.json.get("filePath")
@@ -124,18 +145,50 @@ def __get_file():
             {"key": "file_name", "val": file_name},
         ])
 
-        if not __check_if_project_is_public_by_project_id(project_id):
+        if not query_tool_check_if_project_is_public_by_project_id(project_id):
             # 如果此项目不是公开的, 则需要检查权限
             user = check_user_before_request(request)
-            project_obj = __get_project_by_project_id(project_id)
+            project_obj = query_tool_get_project_by_project_id(project_id)
             if project_obj['userId'] != user['id']:
                 raise NetworkException(403, "您没有权限访问该文件")
 
-        project_source_code_dir = __get_dir_type_file_path_by_project_id(project_id)
+        project_source_code_dir = __get_dir_file_path_by_project_id(project_id)
         source_code_file_relative_path = f"{file_path}/{file_name}"
         my_reader = SourceCodeReader(project_source_code_dir)
         response_content = my_reader.read(source_code_file_relative_path)
         return build_success_response(data=response_content)
+
+    except NetworkException as e:
+        return build_error_response(code=e.code, msg=e.msg)
+    except Exception as e:
+        check.printException(e)
+        return build_error_response(code=500, msg='服务器内部错误')
+
+
+@bp.route('/upload', methods=['POST'])
+def upload_file():
+    try:
+        project_id = request.args.get("projectId")
+        file = request.files.get('file')
+        check.checkFrontendArgsIsNotNone([
+            {"key": "projectId", "val": project_id},
+            {"key": "file", "val": file},
+        ])
+
+        # 检查文件格式
+        fileName = file.filename
+        fileName = fileName.strip()
+        fileName_lowercase = fileName.lower()
+        if fileName_lowercase.endswith('json'):
+            filePath = 'json'
+        else:
+            filePath = 'zip'
+
+        __mkdir_project_directory_if_not_exist(project_id)
+
+        file.save(os.path.join(BASE_FILE_STORE_DIR, filePath))
+
+        return build_success_response(msg='上传成功')
 
     except NetworkException as e:
         return build_error_response(code=e.code, msg=e.msg)

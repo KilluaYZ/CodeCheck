@@ -1,5 +1,5 @@
 def getRegisterEmail(userName: str, token: str):
-    html_str1 = """/
+    html_str1 = """
     <!DOCTYPE html>
 <html lang="en">
 
@@ -432,7 +432,7 @@ def getRegisterEmail(userName: str, token: str):
                                                                             </tr>
     """
 
-    html_str2 = f"""\
+    html_str2 = f"""
                                                                             <tr>
                                                                                 <td>
                                                                                     <table width="100%" border="0"
@@ -493,7 +493,7 @@ def getRegisterEmail(userName: str, token: str):
                                                                                         </tbody>
                                                                                     </table>
     """
-    html_str3 = """\
+    html_str3 = """
                                                                                     <table width="100%" border="0"
                                                                                         cellspacing="0" cellpadding="0">
                                                                                         <tbody>
@@ -671,7 +671,7 @@ def getRegisterEmail(userName: str, token: str):
 
 
 def getChangePasswdEmail(userName: str, token: str):
-    html_str1 = """/
+    html_str1 = """
     <!DOCTYPE html>
 <html lang="en">
 
@@ -1104,7 +1104,7 @@ def getChangePasswdEmail(userName: str, token: str):
                                                                             </tr>
     """
 
-    html_str2 = f"""\
+    html_str2 = f"""
                                                                             <tr>
                                                                                 <td>
                                                                                     <table width="100%" border="0"
@@ -1165,7 +1165,7 @@ def getChangePasswdEmail(userName: str, token: str):
                                                                                         </tbody>
                                                                                     </table>
     """
-    html_str3 = """\
+    html_str3 = """
                                                                                     <table width="100%" border="0"
                                                                                         cellspacing="0" cellpadding="0">
                                                                                         <tbody>

@@ -77,16 +77,9 @@ def project_sqls_check_if_project_belong_to_user_id(projectId: str, userId: str)
         return True
     return False
 
-def project_sqls_del_by_project_id(project_id: str):
-    trans = SqlTransaction()
-    try:
-        # 先删除文件
-        file_sqls_del_file_by_project_id(project_id, trans)
+def project_sqls_del_by_project_id(project_id: str, trans: SqlTransaction):
+    # 先删除文件
+    file_sqls_del_file_by_project_id(project_id, trans)
 
-        # tasks和problems不用删除，因为在数据库中已经设置了级联删除
-        trans.execute(' delete from project where id = %s ', project_id)
-
-    except Exception as e:
-        print(f'[ERROR] 删除project {project_id}出现错误')
-        trans.rollback()
-        raise e
+    # tasks和problems不用删除，因为在数据库中已经设置了级联删除
+    return trans.execute(' delete from project where id = %s ', project_id)

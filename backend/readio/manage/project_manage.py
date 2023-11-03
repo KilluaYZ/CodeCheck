@@ -69,6 +69,7 @@ def add_project():
 
 @bp.route('/del', methods=['GET'])
 def del_project():
+    trans = SqlTransaction()
     try:
         project_id = request.args.get("projectId")
 
@@ -80,11 +81,15 @@ def del_project():
         if not project_sqls_check_if_project_belong_to_user_id(project_id, userId):
             raise NetworkException(403, '您没有权限执行该操作')
 
-        project_sqls_
-
+        project_sqls_del_by_project_id(project_id, trans)
+        trans.commit()
     except NetworkException as e:
+        if trans is not None:
+            trans.rollback()
         return build_error_response(code=e.code, msg=e.msg)
     except Exception as e:
+        if trans is not None:
+            trans.rollback()
         check.printException(e)
         return build_error_response(code=500, msg='服务器内部错误')
 

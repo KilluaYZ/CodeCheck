@@ -550,7 +550,7 @@ def getRegisterEmail(userName: str, token: str):
                                                                                                                                 <td class="text-16 py-20 c-grey4 fallback-font"
                                                                                                                                     style="font-size:16px; line-height:22px; font-family:Arial, sans-serif, 'Motiva Sans'; text-align:left; padding-top: 20px; padding-bottom: 20px; color:#f1f1f1;">
                                                                                                                                     祝您生活愉快，<br>
-                                                                                                                                    CodeCheckShower团队
+                                                                                                                                    CodeCheck团队
                                                                                                                                 </td>
                                                                                                                             </tr>
                                                                                                                         </tbody>
@@ -585,7 +585,7 @@ def getRegisterEmail(userName: str, token: str):
                                                                             <tr>
                                                                                 <td class="text-18 pb-60 mpb-40 fallback-font"
                                                                                     style="font-size:18px; line-height:25px; color:#000001; font-family:Arial, sans-serif, 'Motiva Sans'; text-align:left; padding-bottom: 60px;">
-                                                                                    此通知已发送至与您的 CodeCheckShower 帐户关联的电子邮件地址。
+                                                                                    此通知已发送至与您的 CodeCheck 帐户关联的电子邮件地址。
                                                                                     <br><br>
                                                                                     这封电子邮件由系统自动生成，请勿回复。 </td>
                                                                             </tr>
@@ -1223,7 +1223,7 @@ def getChangePasswdEmail(userName: str, token: str):
                                                                                                                                 <td class="text-16 py-20 c-grey4 fallback-font"
                                                                                                                                     style="font-size:16px; line-height:22px; font-family:Arial, sans-serif, 'Motiva Sans'; text-align:left; padding-top: 20px; padding-bottom: 20px; color:#f1f1f1;">
                                                                                                                                     祝您生活愉快，<br>
-                                                                                                                                    CodeCheckShower团队
+                                                                                                                                    CodeCheck团队
                                                                                                                                 </td>
                                                                                                                             </tr>
                                                                                                                         </tbody>
@@ -1258,7 +1258,7 @@ def getChangePasswdEmail(userName: str, token: str):
                                                                             <tr>
                                                                                 <td class="text-18 pb-60 mpb-40 fallback-font"
                                                                                     style="font-size:18px; line-height:25px; color:#000001; font-family:Arial, sans-serif, 'Motiva Sans'; text-align:left; padding-bottom: 60px;">
-                                                                                    此通知已发送至与您的 CodeCheckShower 帐户关联的电子邮件地址。
+                                                                                    此通知已发送至与您的 CodeCheck 帐户关联的电子邮件地址。
                                                                                     <br><br>
                                                                                     这封电子邮件由系统自动生成，请勿回复。 </td>
                                                                             </tr>

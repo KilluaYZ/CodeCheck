@@ -1,0 +1,7 @@
+flask
+PyMySql
+flask_cors
+sqlalchemy
+DButils
+psutil
+flask_apscheduler

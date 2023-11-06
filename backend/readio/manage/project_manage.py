@@ -24,11 +24,16 @@ def get_project_list():
         rows = project_sqls_query_project_sql({"userId": userId})
 
         for i in range(len(rows)):
-            tasks = task_sqls_get_tasks_list_by_project_id(rows[i]['projectId'])
+            project_id = rows[i]['projectId']
+            tasks = task_sqls_get_tasks_list_by_project_id(project_id)
             if tasks is None or len(tasks) == 0:
                 rows[i]['projectStatus'] = 'created'
             else:
                 rows[i]['projectStatus'] = tasks[0]['status']
+
+            problemNum = problem_sql_get_problem_cnt_by_project_id(project_id)
+            rows[i]['problemNum'] = problemNum['problemNum']
+
 
         return build_success_response(data=rows)
 

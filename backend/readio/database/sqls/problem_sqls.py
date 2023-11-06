@@ -69,4 +69,6 @@ def problem_sql_del_by_project_id(problem_id: str, trans=None):
         return trans.execute(sql, problem_id)
     return execute_sql_write(pooldb, sql, problem_id)
 
+def problem_sql_get_problem_cnt_by_project_id(project_id: str):
+    return execute_sql_query_one(pooldb, " select count(*) as problemNum from problems where projectId = %s ", project_id)
 

@@ -16,7 +16,7 @@
                 ></el-avatar>
                 <el-dropdown class="ml20">
                     <span class="el-dropdown-link">
-                        爱呵呵
+                        {{userInfo.username}}
                         <el-icon class="el-icon--right">
                             <arrow-down />
                         </el-icon>
@@ -43,13 +43,14 @@
 
 <script setup lang="ts">
 import { useMenuStore } from '@/store/menu'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import Crumb from './Crumb.vue'
 import { Storage } from '@/utils/cache'
+import { getUserInfo } from '@/utils/auth'
 
 const useStore = useMenuStore()
 const isVisible = ref(false)
-
+const userInfo = ref({});
 /**
  * 进入全屏
  */
@@ -60,10 +61,18 @@ const OpenFullScreen = () => {
 }
 
 const logout = () => {
+
     Storage.removeItem('userInfo')
     Storage.removeItem('token')
     location.reload()
 }
+
+const initInfo = () => {
+    userInfo.value =  getUserInfo()
+    console.log(userInfo.value)
+}
+
+onMounted(initInfo)
 </script>
 
 <style scoped lang="scss">

@@ -135,39 +135,39 @@ def file_sqls_get_text_file_content_by_id(fileId: str) -> str:
     """
     file_path = file_sqls_get_file_path_by_id(fileId)
 
-def file_sqls_get_json_file_obj_by_project_id(project_id: str) -> dict | None:
+def file_sqls_get_json_file_obj_by_project_id(project_id: str) -> dict:
     rows = file_sqls_query_file_info_sql({"projectId": project_id, "fileCategory": "text", "fileSuffix": "json"})
     if rows is None or (rows is not None and len(rows) == 0):
         return None
     return rows[0]
 
-def file_sqls_get_zip_file_obj_by_project_id(project_id: str) -> dict | None:
+def file_sqls_get_zip_file_obj_by_project_id(project_id: str) -> dict:
     rows = file_sqls_query_file_info_sql({"projectId": project_id, "fileCategory": "zip"})
     if rows is None or (rows is not None and len(rows) == 0):
         return None
     return rows[0]
 
-def file_sqls_get_dir_obj_by_project_id(project_id: str) -> dict | None:
+def file_sqls_get_dir_obj_by_project_id(project_id: str) -> dict:
     rows = file_sqls_query_file_info_sql({"projectId": project_id, "fileCategory": "directory"})
     if rows is None or (rows is not None and len(rows) == 0):
         return None
     return rows[0]
 
-def file_sqls_get_dir_path_by_project_id(project_id: str) -> str | None:
+def file_sqls_get_dir_path_by_project_id(project_id: str) -> str:
     file_info = file_sqls_get_dir_obj_by_project_id(project_id)
     if file_info is None:
         return None
     file_path = file_sqls_get_file_path_by_file_info(file_info)
     return file_path
 
-def file_sqls_get_json_file_path_by_project_id(project_id: str) -> str | None:
+def file_sqls_get_json_file_path_by_project_id(project_id: str) -> str:
     file_info = file_sqls_get_json_file_obj_by_project_id(project_id)
     if file_info is None:
         return None
     file_path = file_sqls_get_file_path_by_file_info(file_info)
     return file_path
 
-def file_sqls_get_zip_file_path_by_project_id(project_id: str) -> str | None:
+def file_sqls_get_zip_file_path_by_project_id(project_id: str) -> str:
     file_info = file_sqls_get_zip_file_obj_by_project_id(project_id)
     # print(f'[DEBUG] 1.1.1')
     if file_info is None:

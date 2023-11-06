@@ -5,3 +5,4 @@ sqlalchemy
 DButils
 psutil
 flask_apscheduler
+erniebot

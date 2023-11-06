@@ -112,7 +112,6 @@ def getSessionKeyCheckCode():
         if type not in ['register', 'changePasswd']:
             raise NetworkException(400, '前端缺少参数type值不正确，type值只能为register, changePasswd')
 
-
         if type == 'register':
             userName = request.json.get('userName')
             check.checkFrontendArgsIsNotNone([{"key": "userName", "val": userName}])
@@ -161,6 +160,42 @@ def register():
             raise NetworkException(400, '验证码错误')
 
         register_user_sql(userName, password, email)
+        return build_success_response()
+
+    except NetworkException as e:
+        return build_error_response(code=e.code, msg=e.msg)
+    except Exception as e:
+        check.printException(e)
+        return build_error_response(code=500, msg='服务器内部错误')
+
+def change_pwd_sql(email: str, password: str):
+    user = execute_sql_query_one(pooldb, ' select * from users where email = %s ', email)
+    if user is None:
+        raise NetworkException(400, "此邮箱未注册")
+    userId = user['id']
+    return execute_sql_write(pooldb, ' update users set password=%s where id=%s ', (generate_password_hash(password), userId))
+
+@bp.route('/updatePwd', methods=['POST'])
+def update_pwd():
+    try:
+        email = request.json.get('email')
+        password = request.json.get('password')
+        checkCode = request.json.get('checkCode')
+        sessionKey = request.json.get('sessionKey')
+        check.checkFrontendArgsIsNotNone(
+            [
+                {"key": "email", "val": email},
+                {"key": "password", "val": password},
+                {"key": "checkCode", "val": checkCode},
+                {"key": "sessionKey", "val": sessionKey}
+            ]
+        )
+
+        if not checkCheckCode(checkCode, sessionKey):
+            raise NetworkException(400, '验证码错误')
+
+        change_pwd_sql(email, password)
+
         return build_success_response()
 
     except NetworkException as e:

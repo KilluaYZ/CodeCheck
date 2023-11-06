@@ -95,65 +95,47 @@
                                 </el-row>
                             </el-form>
                         </template>
-                        <template v-else-if='cur_stage === "changePwd"' key='get-session-form'>
-                            <p class="title">修改密码<span class="s-desc">CodeCheck平台</span></p>
-                            <el-form
-                                label-position='top'
-                                :model='form'
-                            >
-                                <el-form-item label="邮箱">
-                                    <el-input
-                                        v-model='form.email'
-                                        placeholder='请输入邮箱'
-                                        class='login-input'
-                                        size='large'
-                                    />
-                                </el-form-item>
-                                <el-form-item label="验证码" >
-                                    <div style='display: flex; flex-direction: row; width: 100%' >
-                                        <el-input
-                                            v-model='form.checkCode'
-                                            placeholder='请输入验证码'
-                                        />
-                                        <el-button type='success' size='large' class='login-input' @click='onClickGetRegisterCheckCodeBtn' >获取验证码{{check_code_count_down}}</el-button>
-                                    </div>
-                                </el-form-item>
-                                <el-row style='margin-top: 30px'>
-                                    <el-button type='primary' @click="onSubmit" class="login-button">确认</el-button>
-                                </el-row>
-                                <el-row style="display: flex;">
-                                    <el-button class='bottom-click-text-btn' text @click="changeStage('login')">已有账户？点击登录</el-button>
-                                </el-row>
-                            </el-form>
-                        </template>
                         <template v-else-if='cur_stage === "changePwd"' key='change-pwd-form'>
                             <p class="title">修改密码<span class="s-desc">CodeCheck平台</span></p>
                             <el-form
                                 label-position='top'
                                 :model='form'
+                                :rules='registerRules'
                             >
-                                <el-form-item label="密码">
+                                <el-form-item label="邮箱" prop='email'>
+                                    <el-input
+                                        v-model='form.email'
+                                        placeholder='请输入邮箱'
+                                        @change='onRegisterEmailChange'
+                                    />
+                                </el-form-item>
+                                <el-form-item label="密码" prop='password'>
                                     <el-input
                                         v-model='form.password'
                                         type='password'
                                         show-password
                                         placeholder='请输入密码'
-                                        class='login-input'
-                                        size='large'
                                     />
                                 </el-form-item>
-                                <el-form-item label="确认密码">
+                                <el-form-item label="确认密码" prop='confirmPassword'>
                                     <el-input
                                         v-model='form.comfirmPassword'
                                         type='password'
                                         show-password
                                         placeholder='请再输入一次密码'
-                                        class='login-input'
-                                        size='large'
                                     />
                                 </el-form-item>
+                                <el-form-item label="验证码" prop='checkCode'>
+                                    <div style='display: flex; flex-direction: row; width: 100%' >
+                                        <el-input
+                                            v-model='form.checkCode'
+                                            placeholder='请输入验证码'
+                                        />
+                                        <el-button type='success' @click='onClickGetChangePwdCheckCodeBtn' :disabled='changePwdPageGetCheckCodeDisabled' >获取验证码  {{check_code_count_down}}</el-button>
+                                    </div>
+                                </el-form-item>
                                 <el-row style='margin-top: 30px'>
-                                    <el-button type='primary' @click="onSubmit" class="login-button">确认</el-button>
+                                    <el-button type='primary' @click="onClickUpdatePwdBtn" class="login-button">确认</el-button>
                                 </el-row>
                                 <el-row style="display: flex;">
                                     <el-button class='bottom-click-text-btn' text @click="changeStage('login')">已有账户？点击登录</el-button>
@@ -177,9 +159,9 @@ import {
     register,
     getRegisterSessionKeyCheckCode,
     getChangePwdSessionKeyCheckCode,
-    checkIfEmailIsRegisted, userProfile
+    checkIfEmailIsRegisted, userProfile, updatePwd
 } from '@/api/auth'
-import { setToken } from '@/utils/auth'
+import { setToken, setUserInfo } from '@/utils/auth'
 
 const userinfo = reactive({
     username: '',
@@ -198,6 +180,7 @@ const cur_stage = ref('login')
 const check_code_count_down = ref('')
 const registerBtnIsDisabled = ref(false)
 const registerPageGetCheckCodeDisabled = ref(false)
+const changePwdPageGetCheckCodeDisabled = ref(false)
 const sessionKey = ref('')
 
 const loginRules = ref({
@@ -227,6 +210,9 @@ const registerRules = ref({
                     callback();
                 }
             }, trigger: 'blur'}
+    ],
+    comfirmPassword:[
+        { required: true, message: "确认密码不能为空", trigger: 'blur' }
     ],
     checkCode:[
         { required: true, message: "验证码不能为空", trigger: 'blur' },
@@ -269,7 +255,8 @@ function onClickLoginBtn(){
                 level: 'admin',
                 avatar: 'https://i.gtimg.cn/club/item/face/img/2/16022_100.gif'
             }
-            Storage.setItem('userinfo', params)
+            // Storage.setItem('userinfo', params)
+            setUserInfo(params);
             location.reload()
         })
     }).catch((res) => {
@@ -313,6 +300,46 @@ function onClickRegisterBtn(){
 
 }
 
+function onClickUpdatePwdBtn(){
+    let email: string = form.value.email;
+    let password: string = form.value.password;
+    let confirmPassword: string = form.value.comfirmPassword;
+    let checkCode: string = form.value.checkCode;
+    if( email === undefined
+        || password === undefined || confirmPassword === undefined || checkCode === undefined
+        ||  email.length === 0 || password.length === 0 || confirmPassword.length === 0 || checkCode.length === 0){
+        ElMessage({
+            type: 'error',
+            message: '请填写完整信息'
+        })
+        return;
+    }
+
+    if(password !== confirmPassword){
+        ElMessage({
+            type: 'error',
+            message: '两次输入的密码不一致，请检查'
+        })
+        return;
+    }
+
+    // register(userName, email, password, checkCode, sessionKey.value).then((res) => {
+    //     ElMessage({
+    //         type: 'success',
+    //         message: '注册成功，正在跳转主页面'
+    //     })
+    //     onClickLoginBtn()
+    // })
+    updatePwd(email,  password, checkCode, sessionKey.value).then((res) =>{
+      ElMessage({
+          type: 'success',
+          message: '密码修改成功,正在跳转主页面'
+      })
+      onClickLoginBtn();
+    })
+
+}
+
 function onClickGetRegisterCheckCodeBtn(){
     let userName: string = form.value.userName;
     let email: string = form.value.email;
@@ -342,6 +369,40 @@ function onClickGetRegisterCheckCodeBtn(){
     })
 }
 
+function onClickGetChangePwdCheckCodeBtn(){
+    let email: string = form.value.email;
+    let password: string = form.value.password;
+    let confirmPassword: string = form.value.comfirmPassword;
+    if(email === undefined || password === undefined || confirmPassword === undefined
+        || email.length === 0 || password.length === 0 || confirmPassword.length === 0){
+        ElMessage({
+            type: 'error',
+            message: '请填写完整信息后再获取验证码'
+        })
+        return;
+    }
+
+    if(password !== confirmPassword){
+        ElMessage({
+            type: 'error',
+            message: '两次输入密码不一致'
+        })
+        return;
+    }
+
+    getChangePwdSessionKeyCheckCode(email).then((res)=>{
+        ElMessage({
+            type:'success',
+            message:'验证码已发送到邮箱，请及时查收'
+        })
+        sessionKey.value = res.data.sessionKey;
+        changePwdPageGetCheckCodeDisabled.value = true;
+        var count_down_interval = setInterval(countDown, 1000)
+    }).catch((res) => {
+
+    })
+}
+
 function countDown(){
     if(check_code_count_down.value === undefined || check_code_count_down.value.length === 0){
         check_code_count_down.value = 60
@@ -352,6 +413,7 @@ function countDown(){
             check_code_count_down.value = ''
             clearInterval(count_down_interval);
             registerPageGetCheckCodeDisabled.value = false;
+            changePwdPageGetCheckCodeDisabled.value = false;
         }
     }
 }
@@ -371,6 +433,8 @@ function onRegisterEmailChange(){
         }
     })
 }
+
+
 
 </script>
 

@@ -32,6 +32,23 @@ export function register(userName: string, email: string, password: string, chec
     })
 }
 
+export function updatePwd(email: string, password: string, checkCode: string, sessionKey: string){
+    let data = {
+        email,
+        password,
+        checkCode,
+        sessionKey
+    }
+    return request({
+        url: 'auth/updatePwd',
+        headers: {
+            isToken: false
+        },
+        method: 'post',
+        data: data
+    })
+}
+
 export function getRegisterSessionKeyCheckCode(userName: string, email: string){
     let data = {
         userName, email,

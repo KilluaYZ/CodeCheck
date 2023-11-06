@@ -9,21 +9,21 @@ from readio.database.sqls.project_sqls import project_sqls_check_if_project_is_p
 from readio.database.sqls.file_sqls import *
 from readio.database.sqls.problem_sqls import *
 from readio.database.sqls.trace_sqls import *
-from readio.ai.WenXinAi import chat
+from readio.ai.WenXinAi import WenXinChat
 
 import base64
 bp = Blueprint('AiChat', __name__, url_prefix='/ai')
 pooldb = readio.database.connectPool.pooldb
 
 @bp.route("/chat", methods=["POST"])
-def chat():
+def ai_chat():
     try:
         chat_history = request.json.get("chatHistory")
         check.checkFrontendArgsIsNotNone([
             {"key": "chatHistory", "val": chat_history},
         ])
 
-        new_chat_history, reply = chat(chat_history)
+        new_chat_history, reply = WenXinChat(chat_history)
         response = {
             "reply": reply
         }

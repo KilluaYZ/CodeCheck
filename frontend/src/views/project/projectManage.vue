@@ -27,6 +27,7 @@
             :is-public='item.isPublic'
             :create-time='item.createTime'
             :delete-func='onClickDelBtn'
+            :problem-num='item.problemNum'
         />
     </el-row>
 

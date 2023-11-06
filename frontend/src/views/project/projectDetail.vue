@@ -42,21 +42,33 @@
                             <el-tab-pane label='AI助手' name='second' style='height: 100%'>
                                 <div style='height: 100%; width: 100%'>
                                     <el-container style='height: 100%; width: 100%'>
-                                        <el-main style='height: 100%;background-color: #fdfdfd'>
+                                        <el-main v-loading='sendChatBtnIsDisabled' element-loading-text='正在思考，请稍等...' style='height: 100%;background-color: #fdfdfd'>
                                             <template v-for='chatItem in chatHistory'>
-                                                <el-row  :justify='chatItem.role === "assistant" ? "start" : "end"' :style='{width: "80%", marginLeft: "10px", marginRight: "10px"}'>
-                                                    <el-card>
-                                                        {{chatItem.content}}
-                                                    </el-card>
+                                                <el-row  justify='start' :style='{width: "100%"}'>
+                                                    <el-row v-if='chatItem.role === "assistant"' style='width: 100%'>
+                                                        <el-avatar  :size='30' :src='AiAvatar' style='margin-right: 5px'/>
+                                                        <el-card class='ChatCard' shadow='hover'>
+                                                            <v-md-preview style='width: 100%' :text='chatItem.content'></v-md-preview>
+                                                        </el-card>
+                                                    </el-row>
+                                                    <el-row v-else justify='end' style='width: 100%; '>
+                                                        <el-card class='ChatCard' shadow='hover'>
+                                                            <v-md-preview style='width: 100%' :text='chatItem.content'></v-md-preview>
+                                                        </el-card>
+                                                        <el-avatar :size='25' src='https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png' style='margin-left: 10px;'/>
+
+                                                    </el-row>
+
                                                 </el-row>
                                             </template>
                                         </el-main>
-                                        <el-footer style='background-color: #fdfdfd; min-height: 100px; max-height: 50%; height: fit-content'>
+                                        <el-footer  style='background-color: #fdfdfd; min-height: 100px; max-height: 50%; height: fit-content'>
+                                            <el-row justify='center' style='margin-bottom: 10px'>
+                                                <el-button type='primary' @click='startNewChat'>+新对话</el-button>
+                                            </el-row>
                                             <el-card style='height: 100%; width: 100%'>
-                                                <el-row style='height: fit-content'>
-                                                    <el-input type='textarea' :row='5' v-model='userInputText'/>
-                                                </el-row>
-                                                <el-row justify='center' style='margin-top: 15px;'>
+                                                <el-row style='height: fit-content; flex-wrap: nowrap;' align='middle'>
+                                                    <el-input type='textarea' :row='5' v-model='userInputText' style='margin-right: 10px;' />
                                                     <el-button circle :icon='Promotion' :disabled='sendChatBtnIsDisabled' type='primary' size='large' @click='onClickChatSendBtn'></el-button>
                                                 </el-row>
                                             </el-card>
@@ -193,6 +205,7 @@ import { ElMessage } from 'element-plus'
 import chatAi from '@/api/ai'
 import { types } from 'sass'
 import List = types.List
+import AiAvatar from '@/assets/images/AiAvatar.jpg'
 
 const codes = ref([])
 const route = useRoute();
@@ -328,6 +341,7 @@ const onClickDirPageFile = (fileName: string, fileCategory: string) => {
 }
 
 const initInfo = () => {
+    getProblemInfo();
     let pathInfo = Storage.getItem(projectId + "-pathInfo");
     if(pathInfo === undefined || pathInfo === null){
         getInfo("/","");
@@ -343,7 +357,7 @@ const initInfo = () => {
         goToDirOrFileByFilePathAndFileName(filePath, fileName, fileCategory);
     }
     // goToDirOrFileByFilePathAndFileName("/arm","arm_init.c");
-    getProblemInfo();
+
 }
 
 const goToDirOrFileByFilePathAndFileName = (filePath: string, fileName: string, fileCategory: string) => {
@@ -400,11 +414,12 @@ const onClickChatSendBtn = () => {
         })
         return;
     }
-
+    sendChatBtnIsDisabled.value = true;
     chatHistory.value.push({
         "role":"user",
         "content": userInputText.value
     })
+    userInputText.value = "";
     chatAiUpdateChatHistory(chatHistory.value)
 }
 
@@ -424,6 +439,7 @@ const chatAiUpdateChatHistory = (chat_history: List) => {
             "content": reply
         })
         Storage.setItem(projectId + "-chat-history", chatHistory.value);
+        sendChatBtnIsDisabled.value = false;
     })
 }
 
@@ -440,6 +456,15 @@ const initChatHistory = () => {
     }else{
         chatHistory.value = chat_histroy;
     }
+}
+
+const startNewChat = () => {
+    let chat_histroy = [{
+        "role":"user",
+        "content":"你好！"
+    }]
+    chatHistory.value = chat_histroy;
+    chatAiUpdateChatHistory(chat_histroy)
 }
 
 onMounted(initInfo)
@@ -490,7 +515,7 @@ html, body, #app{
     height: 100%;
     width: 100%;
     //overflow-x: scroll;
-    overflow-y: auto;
+    overflow-y: scroll;
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* IE 10+ */
 
@@ -535,6 +560,21 @@ html, body, #app{
     width: 100%;
 }
 
+//.ChatCard {
+//    padding: 0;
+//    margin: 0;
+//    .el-card__body {
+//        padding: 0;
+//    }
+//}
+
+.ChatCard{
+    width: fit-content;
+    max-width: 90%;
+    padding: 0;
+    margin-bottom: 10px;
+    border-radius: 12px;
+}
 
 @import "splitpanes/dist/splitpanes.css";
 </style>

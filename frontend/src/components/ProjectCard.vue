@@ -16,12 +16,14 @@
                    </el-row>
                </el-col>
                <el-col span=20>
-                   <el-button type='primary' round @click='onClickEnterProjectBtn'>进入</el-button>
+                   <el-button v-if='stage === "success"' type='success'  round @click='onClickEnterProjectBtn'>进入</el-button>
+                   <el-button v-else type='primary' round :icon='CaretRight' :disabled='submitBtnIsDisabled' @click='onClickSubmitProjectBtn'>分析</el-button>
                </el-col>
            </el-row>
         </template>
         <el-row style='width: 100%'>
-            <div v-for="o in 4" :key="o" class="text item">{{ 'List item ' + o }}</div>
+<!--            <div v-for="o in 4" :key="o" class="text item">{{ 'List item ' + o }}</div>-->
+            <el-statistic title="发现漏洞" :value="problemNum" />
         </el-row>
         <el-divider />
         <el-row style='width: 100%;' justify='space-between' align='middle'>
@@ -51,10 +53,12 @@
 
 <script setup lang='ts'>
 import { ref, defineProps } from 'vue';
-import { delProject } from '@/api/project'
-import { Delete } from '@element-plus/icons-vue'
+import { delProject, submitProject } from '@/api/project'
+import { Delete, CaretRight } from '@element-plus/icons-vue'
 import router from '@/router'
+import { ElMessage } from 'element-plus'
 const visible = ref(false)
+const submitBtnIsDisabled = ref(false)
 const props = defineProps({
     id: {
       required: true,
@@ -82,6 +86,11 @@ const props = defineProps({
     deleteFunc:{
         required: true,
         type: Function
+    },
+    problemNum:{
+        required: false,
+        type: Number,
+        default: 0
     }
 })
 
@@ -96,6 +105,22 @@ const onClickEnterProjectBtn = () => {
         query: {projectId: props.id}
     });
     window.open(routeUrl.href, '_blank')
+}
+
+const onClickSubmitProjectBtn = () => {
+    let projectId = props.id;
+    submitProject(projectId).then(res => {
+        ElMessage({
+            type: "success",
+            message: "提交成功"
+        })
+    }).catch(() => {
+        ElMessage({
+            type: "error",
+            message: "提交失败"
+        })
+    })
+
 }
 
 </script>

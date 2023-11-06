@@ -1,8 +1,8 @@
 """
 解压，压缩文件类
 """
-import os, zipfile, py7zr, rarfile, tarfile, gzip
-
+import os, zipfile, tarfile, gzip
+# import py7zr, rarfile
 class Compressor:
     def __init__(self, file_path: str, output_path: str):
         file_path = file_path.replace("\\", '/')
@@ -70,19 +70,19 @@ class Compressor:
 
     # 7z解压缩
     def un7z_file(self):
-        with py7zr.SevenZipFile(self.file_path, 'r') as fp:
-            file_list = fp.getnames()
-            if len(file_list) > 1:
-                new_file_name = self.__get_file_name_without_suffix(self.file_path)
-                output_dir_path = f'{self.output_path}/{new_file_name}'
-                # self.__mkdir_if_not_exist(output_dir_path)
-            elif len(file_list) == 1:
-                new_file_name = self.__get_file_name_without_suffix(self.file_path)
-                output_dir_path = self.output_path
-            else:
-                raise Exception("Compressor::un7z 解压文件为空")
-            fp.extractall(path=output_dir_path)
-            self.__update_file_path(new_file_name)
+        # with py7zr.SevenZipFile(self.file_path, 'r') as fp:
+        #     file_list = fp.getnames()
+        #     if len(file_list) > 1:
+        #         new_file_name = self.__get_file_name_without_suffix(self.file_path)
+        #         output_dir_path = f'{self.output_path}/{new_file_name}'
+        #         # self.__mkdir_if_not_exist(output_dir_path)
+        #     elif len(file_list) == 1:
+        #         new_file_name = self.__get_file_name_without_suffix(self.file_path)
+        #         output_dir_path = self.output_path
+        #     else:
+        #         raise Exception("Compressor::un7z 解压文件为空")
+        #     fp.extractall(path=output_dir_path)
+        #     self.__update_file_path(new_file_name)
         print('un7z')
 
 
@@ -106,19 +106,19 @@ class Compressor:
 
     # RAR解压缩
     def unrar_file(self):
-        with rarfile.RarFile(self.file_path, 'r') as fp:
-            file_list = fp.getnames()
-            if len(file_list) > 1:
-                new_file_name = self.__get_file_name_without_suffix(self.file_path)
-                output_dir_path = f'{self.output_path}/{new_file_name}'
-                # self.__mkdir_if_not_exist(output_dir_path)
-            elif len(file_list) == 1:
-                new_file_name = self.__get_file_name_without_suffix(self.file_path)
-                output_dir_path = self.output_path
-            else:
-                raise Exception("Compressor::untar 解压文件为空")
-            fp.extractall(path=output_dir_path)
-            self.__update_file_path(new_file_name)
+        # with rarfile.RarFile(self.file_path, 'r') as fp:
+        #     file_list = fp.getnames()
+        #     if len(file_list) > 1:
+        #         new_file_name = self.__get_file_name_without_suffix(self.file_path)
+        #         output_dir_path = f'{self.output_path}/{new_file_name}'
+        #         # self.__mkdir_if_not_exist(output_dir_path)
+        #     elif len(file_list) == 1:
+        #         new_file_name = self.__get_file_name_without_suffix(self.file_path)
+        #         output_dir_path = self.output_path
+        #     else:
+        #         raise Exception("Compressor::untar 解压文件为空")
+        #     fp.extractall(path=output_dir_path)
+        #     self.__update_file_path(new_file_name)
         print('unrar')
 
 
@@ -144,10 +144,10 @@ class Compressor:
 
         if file_type == 'zip' and zipfile.is_zipfile(self.file_path):
             return True
-        elif file_type == '7z' and py7zr.is_7zfile(self.file_path):
-            return True
-        elif file_type == 'rar' and rarfile.is_rarfile(self.file_path):
-            return True
+        # elif file_type == '7z' and py7zr.is_7zfile(self.file_path):
+        #     return True
+        # elif file_type == 'rar' and rarfile.is_rarfile(self.file_path):
+        #     return True
         elif file_type == 'gz':
             return True
         elif file_type == 'tar' and tarfile.is_tarfile(self.file_path):

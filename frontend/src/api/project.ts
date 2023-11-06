@@ -41,3 +41,15 @@ export function getProjectProblems(projectId: string){
         data: data
     })
 }
+
+export function submitProject(projectId: number){
+    let data = {
+        projectId
+    }
+
+    return request({
+        url: 'project/submit',
+        method: 'post',
+        data: data
+    })
+}

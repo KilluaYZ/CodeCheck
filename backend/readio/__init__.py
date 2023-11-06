@@ -9,11 +9,12 @@ from flask_cors import CORS  # 跨域
 
 # app
 from readio.auth import appAuth
+from readio.ai import ai_chat
 from readio.database.init_db import init_db
 from readio.manage.fileManage import getFilePathById
 from readio.monitor.monitor import monitor
-from readio.manage import file_manage as fileManage , userManage
-from readio.utils.json import UpdatedJsonProvider
+from readio.manage import file_manage as fileManage , userManage, project_manage
+# from readio.utils.json import UpdatedJsonProvider
 
 test_cnt = 0
 
@@ -23,7 +24,7 @@ def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     CORS(app)
 
-    app.json_encoder = UpdatedJsonProvider(app)
+    # app.json_encoder = UpdatedJsonProvider(app)
 
     # a simple page that says hello
     @app.route('/hello')
@@ -40,6 +41,8 @@ def create_app(test_config=None):
     app.register_blueprint(userManage.bp)
     app.register_blueprint(appAuth.bp)
     app.register_blueprint(fileManage.bp)
+    app.register_blueprint(project_manage.bp)
+    app.register_blueprint(ai_chat.bp)
 
     # 配置定时任务
     # 该任务作用是每个一个小时检查一次user_token表，将超过1天未活动的token删掉（随便定的，后面改

@@ -65,16 +65,16 @@ def file_sqls_query_file_info_sql(query_param: dict) -> list:
 
 
 def file_sqls_get_project_root_path(projectId: str):
-    return os.path.join(BASE_FILE_STORE_DIR, projectId)
+    return os.path.join(BASE_FILE_STORE_DIR, str(projectId))
 
 def file_sqls_get_project_root_src_path(projectId: str):
-    return os.path.join(file_sqls_get_project_root_path(projectId), 'src')
+    return os.path.join(file_sqls_get_project_root_path(str(projectId)), 'src')
 
 def file_sqls_get_project_root_json_path(projectId: str):
-    return os.path.join(file_sqls_get_project_root_path(projectId), 'json')
+    return os.path.join(file_sqls_get_project_root_path(str(projectId)), 'json')
 
 def file_sqls_get_project_root_zip_path(projectId: str):
-    return os.path.join(file_sqls_get_project_root_path(projectId), 'zip')
+    return os.path.join(file_sqls_get_project_root_path(str(projectId)), 'zip')
 
 def file_sqls_mkdir_if_not_exist(file_path: str):
     if not os.path.exists(file_path):
@@ -92,11 +92,19 @@ def file_sqls_get_file_path_by_file_info(file_info) -> str:
     file_suffix = file_info['fileSuffix']
     file_category = file_info['fileCategory']
 
-    project_id = file_info['project_id']
-    if file_category == 'directory':
-        return f"{file_sqls_get_project_root_path(project_id)}/{file_path}/{file_name}"
-    else:
-        return f"{file_sqls_get_project_root_path(project_id)}/{file_path}/{file_name}.{file_suffix}"
+    project_id = file_info['projectId']
+    print(f'-----------project: {project_id}------------')
+    print(f'[DEBUG] file_path = {file_path}')
+    print(f'[DEBUG] file_name = {file_name}')
+    print(f'[DEBUG] file_suffix = {file_suffix}')
+    print(f'[DEBUG] file_category = {file_category}')
+    print('---------------------------------------------')
+    # if file_category == 'directory':
+    #     return f"{file_sqls_get_project_root_path(project_id)}/{file_path}/{file_name}"
+    # else:
+    #     return f"{file_sqls_get_project_root_path(project_id)}/{file_path}/{file_name}.{file_suffix}"
+    return f"{file_sqls_get_project_root_path(project_id)}/{file_path}/{file_name}"
+    # return f"{file_path}/{file_name}"
 
 
 def file_sqls_get_file_path_by_id(fileId: str) -> str:
@@ -116,6 +124,7 @@ def file_sqls_get_dir_file_path_by_project_id(project_id: str) -> str:
     根据项目id获取源码根目录路径
     """
     file_info = file_sqls_get_dir_obj_by_project_id(project_id)
+    print(f'[DEBUG] file_info = {file_info}')
     file_path = file_sqls_get_file_path_by_file_info(file_info)
     return file_path
 
@@ -160,9 +169,12 @@ def file_sqls_get_json_file_path_by_project_id(project_id: str) -> str | None:
 
 def file_sqls_get_zip_file_path_by_project_id(project_id: str) -> str | None:
     file_info = file_sqls_get_zip_file_obj_by_project_id(project_id)
+    # print(f'[DEBUG] 1.1.1')
     if file_info is None:
         return None
+    # print(f'[DEBUG] file_info = {file_info}')
     file_path = file_sqls_get_file_path_by_file_info(file_info)
+    # print(f'[DEBUG] 1.1.2')
     return file_path
 
 def file_sqls_insert_file(fileName: str,
@@ -210,3 +222,35 @@ def file_sqls_del_file_by_project_id_with_delete_file(project_id: str, trans=Non
         del_file_id = file_sqls_del_file_by_project_id(file['id'], trans)
         delete_ids.append(del_file_id)
     return delete_ids
+
+
+def file_sqls_path_join(path_a: str, path_b: str) -> str:
+    """
+    /home/sdf/123  /aaa/bbb -> /home/sdf/123/aaa/bbb
+    """
+    return f'{path_a}/{path_b}'
+
+def file_sqls_get_file_suffix(_file_path: str) -> str:
+    """
+    /home/sdf/a.txt -> txt
+    """
+    return (os.path.splitext(_file_path)[-1][1:]).lower()
+
+def file_sqls_get_file_path_without_suffix(_file_path: str) -> str:
+    """
+    /home/sdf/a.txt.zip -> /home/sdf/a.txt
+    """
+    return _file_path[:_file_path.rindex('.')]
+
+def file_sqls_get_file_name_without_suffix(_file_path: str) -> str:
+    """
+    /home/sdf/a.zip -> a
+    """
+    return file_sqls_get_file_path_without_suffix(file_sqls_get_file_name(_file_path))
+
+def file_sqls_get_file_name(_file_path):
+    """
+    /home/sdf/a.zip -> a.zip
+    """
+    return _file_path[_file_path.rindex('/') + 1:]
+

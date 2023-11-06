@@ -7,6 +7,10 @@ class Compressor:
     def __init__(self, file_path: str, output_path: str):
         file_path = file_path.replace("\\", '/')
         output_path = output_path.replace("\\", '/')
+
+        print(f'[DEBUG] file_path = {file_path}')
+        print(f'[DEBUG] output_path = {output_path}')
+
         self.file_path = file_path
         self.origin_file_path = self.file_path
         self.output_path = output_path

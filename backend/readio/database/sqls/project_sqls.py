@@ -31,8 +31,8 @@ def project_sqls_query_project_sql(query_param: dict) -> list:
                   ' projects.name as projectName, '
                   ' projects.isPublic as isPublic, '
                   ' projects.userId as userId, '
-                  ' users.name as userName '
-                  ' projects.createTime as createTime, '
+                  ' users.userName as userName, '
+                  ' projects.createTime as createTime '
                   'from projects, users where projects.userId = users.id ')
 
     args_str_list = []
@@ -65,7 +65,7 @@ def project_sqls_query_project_sql(query_param: dict) -> list:
     return rows
 
 def project_sqls_insert(project_name: str, is_public: str, user_id: str, trans=None):
-    sql = ' insert into project(name, isPublic, userId) values(%s, %s, %s) '
+    sql = ' insert into projects(name, isPublic, userId) values(%s, %s, %s) '
     args = (project_name, is_public, user_id)
     if trans is not None:
         return trans.execute(sql, args)
@@ -82,4 +82,4 @@ def project_sqls_del_by_project_id(project_id: str, trans: SqlTransaction):
     file_sqls_del_file_by_project_id(project_id, trans)
 
     # tasks和problems不用删除，因为在数据库中已经设置了级联删除
-    return trans.execute(' delete from project where id = %s ', project_id)
+    return trans.execute(' delete from projects where id = %s ', project_id)

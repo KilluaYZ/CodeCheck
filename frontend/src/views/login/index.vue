@@ -14,15 +14,16 @@
                                 :model='form'
                                 :rules='loginRules'
                             >
-                                <el-form-item label="邮箱">
+                                <el-form-item label="邮箱" prop='email'>
                                     <el-input
                                         v-model='form.email'
                                         placeholder='请输入邮箱'
                                         class='login-input'
                                         size='large'
+
                                     />
                                 </el-form-item>
-                                <el-form-item label="密码">
+                                <el-form-item label="密码" prop='password'>
                                     <el-input
                                         v-model='form.password'
                                         type='password'
@@ -48,20 +49,20 @@
                                 :model='form'
                                 :rules='registerRules'
                             >
-                                <el-form-item label="用户名">
+                                <el-form-item label="用户名" prop='userName'>
                                     <el-input
                                         v-model='form.userName'
                                         placeholder='请输入用户名'
                                     />
                                 </el-form-item>
-                                <el-form-item label="邮箱">
+                                <el-form-item label="邮箱" prop='email'>
                                     <el-input
                                         v-model='form.email'
                                         placeholder='请输入邮箱'
                                         @change='onRegisterEmailChange'
                                     />
                                 </el-form-item>
-                                <el-form-item label="密码">
+                                <el-form-item label="密码" prop='password'>
                                     <el-input
                                         v-model='form.password'
                                         type='password'
@@ -69,7 +70,7 @@
                                         placeholder='请输入密码'
                                     />
                                 </el-form-item>
-                                <el-form-item label="确认密码">
+                                <el-form-item label="确认密码" prop='confirmPassword'>
                                     <el-input
                                         v-model='form.comfirmPassword'
                                         type='password'
@@ -77,7 +78,7 @@
                                         placeholder='请再输入一次密码'
                                     />
                                 </el-form-item>
-                                <el-form-item label="验证码" >
+                                <el-form-item label="验证码" prop='checkCode'>
                                     <div style='display: flex; flex-direction: row; width: 100%' >
                                         <el-input
                                             v-model='form.checkCode'
@@ -202,7 +203,7 @@ const sessionKey = ref('')
 const loginRules = ref({
     email:[
         { required: true, message: "邮箱不能为空", trigger: 'blur' },
-        { pattern:  /^([a-zA-Z0-9]+[-_\.]?)+@[a-zA-Z0-9]+\.[a-z]+$/, message: "邮箱格式不正确", trigger: 'blur'}
+        // { pattern:  /^([a-zA-Z0-9]+[-_\.]?)+@[a-zA-Z0-9]+\.[a-z]+$/, message: "邮箱格式不正确", trigger: 'blur'}
     ],
     password:[
         { required: true, message: "密码不能为空", trigger: 'blur' },
@@ -212,7 +213,7 @@ const loginRules = ref({
 const registerRules = ref({
     email:[
         { required: true, message: "邮箱不能为空", trigger: 'blur' },
-        { pattern:  /^([a-zA-Z0-9]+[-_\.]?)+@[a-zA-Z0-9]+\.[a-z]+$/, message: "邮箱格式不正确", trigger: 'blur'}
+        // { pattern:  /^([a-zA-Z0-9]+[-_\.]?)+@[a-zA-Z0-9]+\.[a-z]+$/, message: "邮箱格式不正确", trigger: 'blur'}
     ],
     userName:[
         { required: true, message: "用户名不能为空", trigger: 'blur' },

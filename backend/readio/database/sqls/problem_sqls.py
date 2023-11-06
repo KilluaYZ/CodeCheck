@@ -14,6 +14,22 @@ def problem_sql_process_problem_json_obj(obj: dict) -> dict:
     if file.startswith(".."):
         file = file[2:]
     obj['file'] = file
+
+    if "trace" in obj:
+        trace = obj['trace']
+        for i in range(len(trace)):
+            trace_file = trace[i]['file']
+            trace_file = trace_file.replace("\\",'/')
+            if trace_file.startswith(".."):
+                trace_file = trace_file[2:]
+            trace[i]['file'] = trace_file
+
+            trace_snippet_path = trace[i]['snippet_path']
+            trace_snippet_path = trace_snippet_path.replace("\\", '/')
+            if trace_snippet_path.startswith(".."):
+                trace_snippet_path = trace_snippet_path[2:]
+            trace[i]['snippet_path'] = trace_snippet_path
+        obj['trace'] = trace
     return obj
 
 def problem_sql_insert_problem_json_obj(obj: dict, project_id: str, trans = None):
@@ -37,9 +53,9 @@ def problem_sql_get_problem_json_obj_list_by_project_id(project_id: str) -> List
     sql = ' select * from problems where projectId = %s '
     return execute_sql_query(pooldb, sql, project_id)
 
-def problem_sql_get_problem_json_obj_by_project_id_and_file_path(project_id: str, file_path: str) -> dict:
+def problem_sql_get_problem_json_objs_by_project_id_and_file_path(project_id: str, file_path: str) -> List[Dict]:
     sql = ' select * from problems where projectId = %s and filePath = %s '
-    return execute_sql_query_one(pooldb, sql, (project_id, file_path))
+    return execute_sql_query(pooldb, sql, (project_id, file_path))
 
 def problem_sql_del_by_problem_id(problem_id: str, trans=None):
     sql = ' delete from problems where problemId= %s '
@@ -52,3 +68,5 @@ def problem_sql_del_by_project_id(problem_id: str, trans=None):
     if trans is not None:
         return trans.execute(sql, problem_id)
     return execute_sql_write(pooldb, sql, problem_id)
+
+

@@ -7,44 +7,58 @@ import json
 from readio.database.sqls.task_sqls import *
 from readio.database.sqls.file_sqls import file_sqls_get_zip_file_path_by_project_id, file_sqls_get_project_root_src_path, file_sqls_insert_file, file_sqls_get_json_file_path_by_project_id
 from readio.database.sqls.problem_sqls import problem_sql_insert_problem_json_obj
+from readio.database.sqls.trace_sqls import trace_sqls_insert_trace_by_trace_obj
 class Analyzer:
     def __init__(self, max_workers = 8):
         self.executor = ThreadPoolExecutor(max_workers=max_workers)
 
 
     def run(self, project_id: str, task_id: str):
+        trans = SqlTransaction(pooldb)
+        trans.begin()
         try:
+            print(f'[DEBUG] args: project_id = {project_id}, task_id = {task_id}')
+            print(f'[DEBUG] 1')
             # 获取压缩包路径
             zip_file_path = file_sqls_get_zip_file_path_by_project_id(project_id)
+            print(f'[DEBUG] 1.1')
             src_dir_path = file_sqls_get_project_root_src_path(project_id)
-
+            print(f'[DEBUG] 1.2')
             task_sqls_update_task_status(task_id, 'unzipping')
             # 申明一个Compressor实例，并解压
             cmr = Compressor(zip_file_path, src_dir_path)
             cmr.uncompress()
-
+            print(f'[DEBUG] 1.3')
             # 拿到解压后的目标文件夹
             target_src_path = cmr.file_path
+            target_src_path = target_src_path[target_src_path.index("src"):]
             target_src_dir_name = cmr.current_file_name_without_suffix
             # 将解压后的源码目录根目录加入到file_info表中
-            file_sqls_insert_file(target_src_dir_name, target_src_path, 'directory', project_id)
-
+            file_sqls_insert_file(target_src_dir_name, target_src_path, 'directory', project_id, trans)
+            print(f'[DEBUG] 2')
             task_sqls_update_task_status(task_id, 'analysing')
-            # TODO: 开始解析json，并进行一些分析
             json_path = file_sqls_get_json_file_path_by_project_id(project_id)
             json_file_text = ''
+            print(f'[DEBUG] 2.1')
             with open(json_path, "r") as jf:
                 json_file_text = jf.read()
                 json_obj = json.loads(json_file_text)
                 for problem in json_obj:
-                    problem_sql_insert_problem_json_obj(problem, project_id)
+                    problem_id = problem_sql_insert_problem_json_obj(problem, project_id, trans)
+                    traces_list = problem["trace"]
+                    if traces_list is not None:
+                        for trace_obj in traces_list:
+                            trace_sqls_insert_trace_by_trace_obj(trace_obj, project_id, problem_id, trans)
 
+            print(f'[DEBUG] 3')
+            trans.commit()
             task_sqls_update_task_status(task_id, 'success')
 
         except Exception as e:
             print("[ERROR] 运行analyser::run出错")
             print(e)
             task_sqls_update_task_status(task_id, 'error')
+            trans.rollback()
             raise e
 
 

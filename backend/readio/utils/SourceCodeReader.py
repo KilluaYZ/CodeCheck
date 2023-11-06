@@ -26,11 +26,11 @@ class SourceCodeReader:
         """
         读入文本内容，
         [
-            {"content":"zxczxczxczxczxczxc"},
-            {"content":"zxczxczxczxczxczxc"},
-            {"content":"zxczxczxczxczxczxc"},
-            {"content":"zxczxczxczxczxczxc"},
-            {"content":"zxczxczxczxczxczxc"},
+            {
+                "content":"zxczxczxczxczxczxc",
+                "lineNo": 123,
+                "problem":{}
+            },
         ]
         """
         lines = []
@@ -38,8 +38,10 @@ class SourceCodeReader:
             lines = f.readlines()
 
         result = []
+        line_no = 1
         for line in lines:
-            result.append({"content": line})
+            result.append({"content":line.replace('\n',''), "id": line_no})
+            line_no += 1
 
         return result
 
@@ -126,7 +128,7 @@ class SourceCodeReader:
             return 'special', None
 
     def read(self, relative_path: str):
-        abs_path = os.path.join(self.ROOT_PATH, relative_path)
+        abs_path = f"{self.ROOT_PATH}/{relative_path}"
 
         response = {}
         file_category, file_type = self.get_file_category_type(abs_path)

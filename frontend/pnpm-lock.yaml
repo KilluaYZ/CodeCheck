@@ -8,18 +8,30 @@ dependencies:
   '@element-plus/icons-vue':
     specifier: ^2.1.0
     version: 2.1.0(vue@3.3.7)
+  '@highlightjs/vue-plugin':
+    specifier: ^2.1.0
+    version: 2.1.0(highlight.js@11.9.0)(vue@3.3.7)
+  '@syncfusion/ej2-vue-layouts':
+    specifier: ^23.1.36
+    version: 23.1.36
   axios:
     specifier: ^1.6.0
     version: 1.6.0
   element-plus:
     specifier: ^2.4.1
     version: 2.4.1(vue@3.3.7)
+  highlight.js:
+    specifier: ^11.9.0
+    version: 11.9.0
   pinia:
     specifier: ^2.1.7
     version: 2.1.7(typescript@4.9.5)(vue@3.3.7)
   sass:
     specifier: ^1.69.5
     version: 1.69.5
+  splitpanes:
+    specifier: ^3.1.5
+    version: 3.1.5
   vite-plugin-inspect:
     specifier: ^0.7.41
     version: 0.7.41(vite@4.5.0)
@@ -29,6 +41,12 @@ dependencies:
   vue-router:
     specifier: ^4.2.5
     version: 4.2.5(vue@3.3.7)
+  vue-splitpane:
+    specifier: ^1.0.6
+    version: 1.0.6
+  vue3-split-panel:
+    specifier: ^0.2.0
+    version: 0.2.0(typescript@4.9.5)
 
 devDependencies:
   '@types/node':
@@ -37,6 +55,9 @@ devDependencies:
   '@types/nprogress':
     specifier: ^0.2.2
     version: 0.2.2
+  '@types/splitpanes':
+    specifier: ^2.2.4
+    version: 2.2.4
   '@vitejs/plugin-vue':
     specifier: ^4.4.0
     version: 4.4.0(vite@4.5.0)(vue@3.3.7)
@@ -293,6 +314,16 @@ packages:
     resolution: {integrity: sha512-OfX7E2oUDYxtBvsuS4e/jSn4Q9Qb6DzgeYtsAdkPZ47znpoNsMgZw0+tVijiv3uGNR6dgNlty6r9rzIzHjtd/A==}
     dev: false
 
+  /@highlightjs/vue-plugin@2.1.0(highlight.js@11.9.0)(vue@3.3.7):
+    resolution: {integrity: sha512-E+bmk4ncca+hBEYRV2a+1aIzIV0VSY/e5ArjpuSN9IO7wBJrzUE2u4ESCwrbQD7sAy+jWQjkV5qCCWgc+pu7CQ==}
+    peerDependencies:
+      highlight.js: ^11.0.1
+      vue: ^3
+    dependencies:
+      highlight.js: 11.9.0
+      vue: 3.3.7(typescript@4.9.5)
+    dev: false
+
   /@jridgewell/sourcemap-codec@1.4.15:
     resolution: {integrity: sha512-eF2rxCRulEKXHTRiDrDy6erMYWqNw4LPdQ8UQA4huuxaQsVeRPFl2oM8oDGxMFhJUWZf9McpLtJasDDZb/Bpeg==}
 
@@ -338,6 +369,37 @@ packages:
     resolution: {integrity: sha512-Ccy0NlLkzr0Ex2FKvh2X+OyERHXJ88XJ1MXtsI9y9fGexlaXaVTPzBCRBwIxFkORuOb+uBqeu+RqnpgYTEZRUQ==}
     dev: false
 
+  /@syncfusion/ej2-base@23.1.41:
+    resolution: {integrity: sha512-ROtvuLIVkKl4eL+ubQjQQLleRMY98nYlxlBaFw4axtiDLoBbzOYtiFXmdP/KE+uNrMquZAwl+aduPX0loG3EAw==}
+    hasBin: true
+    dependencies:
+      '@syncfusion/ej2-icons': 23.1.36
+    dev: false
+
+  /@syncfusion/ej2-icons@23.1.36:
+    resolution: {integrity: sha512-Q7S50bOzXL9X46doNIGSGr61RCY/1RW9iz1U7yyARr2XBQhWnijk+t/FVBk1piR0nioRXbKQcPZOLiEo6zf1xw==}
+    dev: false
+
+  /@syncfusion/ej2-layouts@23.1.36:
+    resolution: {integrity: sha512-vS1KpUxLcrFNjRgkaotWWMmja9x1XjY06r70P/1JbxT66oJZwv5YRfBBqT1rFeYEWUGm0ciMEMehyTsPE3Pefw==}
+    dependencies:
+      '@syncfusion/ej2-base': 23.1.41
+    dev: false
+
+  /@syncfusion/ej2-vue-base@23.1.36:
+    resolution: {integrity: sha512-Wm+J3bfNeAa5rIKrgP23ykLSBYPNXMz1NXj4J9PCjDzq8nCiNcxdGNQ1jvYEsgL9MFnqqdODePly31IPJOpcIQ==}
+    dependencies:
+      '@syncfusion/ej2-base': 23.1.41
+    dev: false
+
+  /@syncfusion/ej2-vue-layouts@23.1.36:
+    resolution: {integrity: sha512-xMN6GlVKNCOF9viS6FVJx/jfmDKZDROcxNR6R1Q8LN/UxkRTx+CrVJQ83GoACipOOtsf0IvaHs1vvL2yN2BzhQ==}
+    dependencies:
+      '@syncfusion/ej2-base': 23.1.41
+      '@syncfusion/ej2-layouts': 23.1.36
+      '@syncfusion/ej2-vue-base': 23.1.36
+    dev: false
+
   /@types/estree@1.0.4:
     resolution: {integrity: sha512-2JwWnHK9H+wUZNorf2Zr6ves96WHoWDJIftkcxPKsS7Djta6Zu519LarhRNljPXkpsZR2ZMwNCPeW7omW07BJw==}
 
@@ -358,6 +420,12 @@ packages:
 
   /@types/nprogress@0.2.2:
     resolution: {integrity: sha512-2wLrSJXLztGmr7wXwM0hA/wuIOY9DznVdd+ZFofHOiXcj9JnVt+2ZeLRJ7v5ZVlmheSkUOSg3Q3O4Ce7yji79A==}
+    dev: true
+
+  /@types/splitpanes@2.2.4:
+    resolution: {integrity: sha512-k1bLppuHIRMEZSSLLZDtzK9Nq2/sCGmSzdNMZzrMNvbeSkYkV+KD2wpMb4pAdZ4XDvqenK6TMTGVK4hFyT//kA==}
+    dependencies:
+      vue: 2.7.15
     dev: true
 
   /@types/web-bluetooth@0.0.16:
@@ -407,6 +475,14 @@ packages:
     dependencies:
       '@vue/compiler-core': 3.3.7
       '@vue/shared': 3.3.7
+
+  /@vue/compiler-sfc@2.7.15:
+    resolution: {integrity: sha512-FCvIEevPmgCgqFBH7wD+3B97y7u7oj/Wr69zADBf403Tui377bThTjBvekaZvlRr4IwUAu3M6hYZeULZFJbdYg==}
+    dependencies:
+      '@babel/parser': 7.23.0
+      postcss: 8.4.31
+      source-map: 0.6.1
+    dev: true
 
   /@vue/compiler-sfc@3.3.7:
     resolution: {integrity: sha512-7pfldWy/J75U/ZyYIXRVqvLRw3vmfxDo2YLMwVtWVNew8Sm8d6wodM+OYFq4ll/UxfqVr0XKiVwti32PCrruAw==}
@@ -858,6 +934,11 @@ packages:
     hasBin: true
     dev: true
 
+  /highlight.js@11.9.0:
+    resolution: {integrity: sha512-fJ7cW7fQGCYAkgv4CPfwFHrfd/cLS4Hau96JuJ+ZTOWhjnhoeN1ub1tFmALm/+lW5z4WCAuAV9bm05AP0mS6Gw==}
+    engines: {node: '>=12.0.0'}
+    dev: false
+
   /human-signals@2.1.0:
     resolution: {integrity: sha512-B4FFZ6q/T2jhhksgkbEW3HBvWIfDW85snkQgawt07S7J5QXTk6BkNV+0yAeZrM5QpMAdYlocGoljn0sJ/WQkFw==}
     engines: {node: '>=10.17.0'}
@@ -1282,6 +1363,19 @@ packages:
     resolution: {integrity: sha512-R0XvVJ9WusLiqTCEiGCmICCMplcCkIwwR11mOSD9CR5u+IXYdiseeEuXCVAjS54zqwkLcPNnmU4OeJ6tUrWhDw==}
     engines: {node: '>=0.10.0'}
 
+  /source-map@0.6.1:
+    resolution: {integrity: sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==}
+    engines: {node: '>=0.10.0'}
+    dev: true
+
+  /split.js@1.6.5:
+    resolution: {integrity: sha512-mPTnGCiS/RiuTNsVhCm9De9cCAUsrNFFviRbADdKiiV+Kk8HKp/0fWu7Kr8pi3/yBmsqLFHuXGT9UUZ+CNLwFw==}
+    dev: false
+
+  /splitpanes@3.1.5:
+    resolution: {integrity: sha512-r3Mq2ITFQ5a2VXLOy4/Sb2Ptp7OfEO8YIbhVJqJXoFc9hc5nTXXkCvtVDjIGbvC0vdE7tse+xTM9BMjsszP6bw==}
+    dev: false
+
   /strip-final-newline@2.0.0:
     resolution: {integrity: sha512-BrpvfNAE3dcvq7ll3xVumzjKjZQ5tI1sEUIKr3Uoks0XUl45St3FlatVqef9prk4jRDzhW6WZg+3bk93y6pLjA==}
     engines: {node: '>=6'}
@@ -1508,6 +1602,10 @@ packages:
       vue: 3.3.7(typescript@4.9.5)
     dev: false
 
+  /vue-splitpane@1.0.6:
+    resolution: {integrity: sha512-6sneVSEeF1VsCD025HP93nRxwzYhv3rotCeYi2Ah1FmGxwtfqbCZEIzaHGberdGNCpMlEzGD/1OIE1kK5QukLA==}
+    dev: false
+
   /vue-template-compiler@2.7.15:
     resolution: {integrity: sha512-yQxjxMptBL7UAog00O8sANud99C6wJF+7kgbcwqkvA38vCGF7HWE66w0ZFnS/kX5gSoJr/PQ4/oS3Ne2pW37Og==}
     dependencies:
@@ -1525,6 +1623,22 @@ packages:
       '@vue/language-core': 1.8.22(typescript@4.9.5)
       semver: 7.5.4
       typescript: 4.9.5
+    dev: true
+
+  /vue3-split-panel@0.2.0(typescript@4.9.5):
+    resolution: {integrity: sha512-jEDaLUsGbETOFkqUppXORNX5/iutzFc7H4woujjCIADrnBql1kiDK/NZhqu6PmXWM1v9wVG5WM+t6l+axtEkZQ==}
+    dependencies:
+      split.js: 1.6.5
+      vue: 3.3.7(typescript@4.9.5)
+    transitivePeerDependencies:
+      - typescript
+    dev: false
+
+  /vue@2.7.15:
+    resolution: {integrity: sha512-a29fsXd2G0KMRqIFTpRgpSbWaNBK3lpCTOLuGLEDnlHWdjB8fwl6zyYZ8xCrqkJdatwZb4mGHiEfJjnw0Q6AwQ==}
+    dependencies:
+      '@vue/compiler-sfc': 2.7.15
+      csstype: 3.1.2
     dev: true
 
   /vue@3.3.7(typescript@4.9.5):

@@ -144,8 +144,15 @@ const resetForm = () => {
 //         isPublic: true
 //     },
 // ])
-
-const data = ref([])
+type ProjectType = {
+    projectId: number,
+    projectName: string,
+    projectStatus: string,
+    isPublic: boolean,
+    createTime: string,
+    problemNum: number
+}
+const data = ref<ProjectType[]>([])
 const uploadJson = ref<UploadInstance>()
 const uploadSrc = ref<UploadInstance>()
 const currentJsonFile = ref<UploadFile>()
@@ -199,25 +206,28 @@ const onClickCommitBtn = () => {
     });
     addProject(form.value.projectName, form.value.isPublic).then((res) => {
         let projectId = res.data.projectId;
-        readinFile(currentJsonFile.value).then((jsonResult) => {
-            let jsonFileName = jsonResult.name;
-            let jsonFileContent = jsonResult.content;
-            uploadFile(projectId, jsonFileName, jsonFileContent).then((res) => {
-                readinFile(currentSrcFile.value).then((srcResult) => {
-                    let srcFileName = srcResult.name;
-                    let srcFileContent = srcResult.content;
-                    setTimeout(()=> {
-                        uploadFile(projectId, srcFileName, srcFileContent).then((res) => {
-                            uploadFileLoading.close()
-                            getList();
-                            dialogVisible.value = false;
+        if(currentJsonFile.value !== undefined){
+            readinFile(currentJsonFile.value).then((jsonResult: {name: string, content: string}) => {
+                let jsonFileName = jsonResult.name;
+                let jsonFileContent = jsonResult.content;
+                uploadFile(projectId, jsonFileName, jsonFileContent).then((res) => {
+                    if(currentSrcFile.value !== undefined){
+                        readinFile(currentSrcFile.value).then((srcResult: {name: string, content: string}) => {
+                            let srcFileName = srcResult.name;
+                            let srcFileContent = srcResult.content;
+                            setTimeout(()=> {
+                                uploadFile(projectId, srcFileName, srcFileContent).then((res) => {
+                                    uploadFileLoading.close()
+                                    getList();
+                                    dialogVisible.value = false;
+                                }).catch(() => {uploadFileLoading.close()})
+                            }, 1000)
                         }).catch(() => {uploadFileLoading.close()})
-                    }, 1000)
+                    }
                 }).catch(() => {uploadFileLoading.close()})
             }).catch(() => {uploadFileLoading.close()})
-        }).catch(() => {uploadFileLoading.close()})
+        }
     }).catch(() => {uploadFileLoading.close()})
-
 }
 
 const checkIfFileTypeInList = (file: UploadFile, fileList: string[]): boolean => {
@@ -230,20 +240,6 @@ const checkIfFileTypeInList = (file: UploadFile, fileList: string[]): boolean =>
 }
 
 var globalProjectId = '';
-
-const handleUploadFile = (param: any) => {
-    const uploadFileLoading = ElLoading.service({
-        lock: true,
-        text: '正在上传文件，请稍候',
-        background: 'rgba(0, 0, 0, 0.7)'
-    });
-    uploadFile(globalProjectId, param.file).then((res) => {
-        console.log(res)
-        uploadFileLoading.close();
-    }).catch(() => {
-        uploadFileLoading.close();
-    })
-}
 
 const handleJsonUploadChanged = (currentUploadFile: UploadFile, currentUploadFiles: UploadFiles) => {
     console.log("当前file")
@@ -276,17 +272,25 @@ const handleSrcUploadChanged = (currentUploadFile: UploadFile, currentUploadFile
 }
 
 const readinFile = (binaryFile: UploadFile) => {
-    return new Promise((resolve, reject) => {
+    return new Promise<{name: string, content: string}>((resolve, reject) => {
         let reader = new FileReader();
-        reader.readAsDataURL(binaryFile.raw);
+        reader.readAsDataURL(binaryFile.raw as Blob);
         reader.onload = (e) => {
-            let content = e.target.result;
-            content = content.slice(content.indexOf(','))
-            let result = {
-                content: content,
-                name: binaryFile.name
+            if(e.target !== null){
+                let content: string = e.target.result as string;
+                if(content !== null){
+                    content = content.slice(content.indexOf(','))
+                    let result = {
+                        content: content,
+                        name: binaryFile.name
+                    }
+                    resolve(result);
+                }else{
+                    reject()
+                }
+            }else{
+                reject();
             }
-            resolve(result);
         }
         reader.onerror = reject;
     })

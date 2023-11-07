@@ -104,10 +104,32 @@ interface DisplayItemsType {
     value: string
 }
 
-const displayItems: DisplayItemsType = ref([])
+type ProblemCalssType = {
+    name: string,
+    profile: string,
+    severity: string,
+    inspection_name: string
+}
+type ProblemDetailType = {
+    file: string,
+    function: string,
+    code_snippet: string,
+    line: number,
+    offset: number,
+    length: number,
+    language: string,
+    description: string,
+    reason: string,
+    source: string,
+    sourceClean: string,
+    problem_class: ProblemCalssType
+}
 
-const problemDetail = ref({})
+const displayItems = ref<DisplayItemsType[]>([])
+
+const problemDetail = ref<ProblemDetailType>()
 const trace = ref([])
+
 const initInfo = () => {
     problemDetail.value = JSON.parse(props.problemDetailJsonString);
     trace.value = problemDetail.value.trace;

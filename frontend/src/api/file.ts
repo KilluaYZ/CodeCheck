@@ -2,7 +2,7 @@ import request from '@/utils/request'
 import axios from 'axios'
 import { getToken } from '@/utils/auth'
 
-export function uploadFile(projectId: string, fileName: string, fileContent: Blob){
+export function uploadFile(projectId: string, fileName: string, fileContent: string){
     const data = {
         projectId,
         fileName,
@@ -35,7 +35,7 @@ export function uploadFile(projectId: string, fileName: string, fileContent: Blo
     // })
 }
 
-export function getFile(projectId: string, filePath: string, fileName: string){
+export function getFile(projectId: number, filePath: string, fileName: string){
     let data = {
         projectId,
         filePath,

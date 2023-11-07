@@ -6,3 +6,5 @@ DButils
 psutil
 flask_apscheduler
 erniebot
+py7zr
+rarfile

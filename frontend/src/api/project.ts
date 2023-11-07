@@ -30,7 +30,7 @@ export function delProject(projectId: string){
     })
 }
 
-export function getProjectProblems(projectId: string){
+export function getProjectProblems(projectId: number){
     let data = {
         projectId
     }

@@ -25,7 +25,7 @@ git clone git@codehub.devcloud.cn-north-4.huaweicloud.com:Reader00001/Reader-ser
 # 进入目录
 cd Reader-server
 # 运行
-export FLASK_APP=readio
+export FLASK_APP=codecheck
 export FLASK_ENV=development
 export MYSQL_HOST= <mysql服务器地址，默认为127.0.0.1>
 export MYSQL_PORT= <mysql服务器端口，默认为3306>

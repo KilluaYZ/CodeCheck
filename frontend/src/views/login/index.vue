@@ -169,15 +169,22 @@ const userinfo = reactive({
 })
 const count = ref(1)
 const enterPressed = ref(false)
-const form = ref({
-    "userName": undefined,
-    "password": undefined,
-    "email": undefined,
-    "comfirmPassword": undefined,
-    "checkCode": undefined
+type FormType = {
+    userName: string,
+    password: string,
+    email: string,
+    comfirmPassword: string,
+    checkCode: string
+}
+const form = ref<FormType>({
+    userName: "",
+    password: "",
+    email: "",
+    comfirmPassword: "",
+    checkCode: ""
 })
 const cur_stage = ref('login')
-const check_code_count_down = ref('')
+const check_code_count_down = ref<string>('')
 const registerBtnIsDisabled = ref(false)
 const registerPageGetCheckCodeDisabled = ref(false)
 const changePwdPageGetCheckCodeDisabled = ref(false)
@@ -203,7 +210,7 @@ const registerRules = ref({
     ],
     password:[
         { required: true, message: "密码不能为空", trigger: 'blur' },
-        { validator: (rule, value, callback) => {
+        { validator: (rule: any, value: string, callback: Function) => {
                 if (value !== form.value.comfirmPassword){
                     callback(new Error("两次输入的密码不一致"));
                 }else{
@@ -368,7 +375,7 @@ function onClickGetRegisterCheckCodeBtn(){
 
     })
 }
-
+var count_down_interval:any;
 function onClickGetChangePwdCheckCodeBtn(){
     let email: string = form.value.email;
     let password: string = form.value.password;
@@ -397,7 +404,7 @@ function onClickGetChangePwdCheckCodeBtn(){
         })
         sessionKey.value = res.data.sessionKey;
         changePwdPageGetCheckCodeDisabled.value = true;
-        var count_down_interval = setInterval(countDown, 1000)
+        count_down_interval = setInterval(countDown, 1000)
     }).catch((res) => {
 
     })
@@ -405,10 +412,10 @@ function onClickGetChangePwdCheckCodeBtn(){
 
 function countDown(){
     if(check_code_count_down.value === undefined || check_code_count_down.value.length === 0){
-        check_code_count_down.value = 60
+        check_code_count_down.value = "60"
     }else{
-        if(check_code_count_down.value - 1 >= 0){
-            check_code_count_down.value -= 1;
+        if(parseInt(check_code_count_down.value) - 1 >= 0){
+            check_code_count_down.value = (parseInt(check_code_count_down.value) - 1).toString();
         }else{
             check_code_count_down.value = ''
             clearInterval(count_down_interval);

@@ -206,16 +206,20 @@ import chatAi from '@/api/ai'
 import { types } from 'sass'
 import List = types.List
 import AiAvatar from '@/assets/images/AiAvatar.jpg'
-
-const codes = ref([])
+type TraceType = {}
+type FileType = {fileName: string, fileCategory: string, filePath: string, fileType: string, children: {fileName: string, fileCategory: string}[]}
+type ProblemClassType = {severity: string, profile: string}
+type ProblemType = {problemId: number, filePath: string, problemClassName: string, problemDetail: string, severity: string, description: string, problem_class: ProblemClassType}
+type CodeType = {content: string, problem: ProblemType[], trace: TraceType[]}
+const codes = ref<{}>([])
 const route = useRoute();
-var projectId = route.query.projectId;
+var projectId: number = route.query.projectId as number;
 const language = ref('')
 const font_size = ref(18)
 const activeName = ref('first')
 const displayCode = ref(false)
 const displayDir = ref(false)
-const pathStack = ref([
+const pathStack = ref<{ fileCategory: string, fileName: string }[]>([
     // {
     //     "fileCategory": "directory",
     //     "fileName": "arm"
@@ -230,15 +234,18 @@ const pathStack = ref([
     // }
 ])
 
-const dirData = ref([])
+const dirData = ref<FileType[]>([])
 const selected_text = ref("")
 const sendChatBtnIsDisabled = ref(false)
-window.addEventListener("mouseup", (e) => {
-    selected_text.value = window.getSelection().toString();
-})
+const visible = ref(false)
+// window.addEventListener("mouseup", (e) => {
+//     if(window.getSelection()){
+//         selected_text.value = window.getSelection().toString();
+//     }
+// })
 
 const userInputText = ref("")
-const chatHistory = ref([])
+const chatHistory = ref<{ role: string, content: string }[]>([])
 
 const pushPath = (fileCategory: string, fileName: string) => {
     pathStack.value.push({
@@ -366,7 +373,7 @@ const goToDirOrFileByFilePathAndFileName = (filePath: string, fileName: string, 
     console.log("filePath: "+filePath)
     console.log("fileCategory: "+fileCategory)
     let filePathList = filePath.split("/");
-    let processedFilePathList = [];
+    let processedFilePathList: string[] = [];
     filePathList.forEach(item => {
         if(item !== ""){
             processedFilePathList.push(item);
@@ -431,7 +438,7 @@ const loadChatHistoryFromStorage = () => {
     return chat_history;
 }
 
-const chatAiUpdateChatHistory = (chat_history: List) => {
+const chatAiUpdateChatHistory = (chat_history: { role: string, content: string }[]) => {
     chatAi(chat_history).then(res => {
         let reply = res.data.reply;
         chatHistory.value.push({

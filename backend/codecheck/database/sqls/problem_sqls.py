@@ -45,6 +45,14 @@ def problem_sql_insert_problem_json_obj(obj: dict, project_id: str, trans = None
         return trans.execute(sql, args)
     return execute_sql_write(pooldb, sql, args)
 
+def problem_sql_insert_problem_other_obj(value: int, filePath: str, lineNumber: int, project_id: str, trans: SqlTransaction = None):
+    problemDetail = json.dumps({'file': filePath, 'line': lineNumber, "value": value})
+    args = (project_id, filePath, problemDetail, 'other')
+    sql = ' insert into problems(projectId, filePath, problemDetail, problemType) values(%s, %s, %s, %s) '
+    if trans is not None:
+        return trans.execute(sql, args)
+    return execute_sql_write(pooldb, sql, args)
+
 def problem_sql_get_problem_json_obj_by_problem_id(problem_id: str) -> dict:
     sql = ' select * from problems where problemId = %s '
     return execute_sql_query_one(pooldb, sql, problem_id)

@@ -5,7 +5,6 @@
 使用DBUtils实现连接池
 '''
 import pymysql
-from sqlalchemy import null
 from dbutils.pooled_db import PooledDB
 from pymysql.cursors import DictCursor
 import time
@@ -45,7 +44,7 @@ class Pooldb:
                 )
             except BaseException as e:
                 print(f"数据库连接错误！{e}")
-                self.pool = null
+                self.pool = None
             if self.pool:
                 print(f"数据库{self.host}:{self.port}连接成功！当前操作数据库{self.database}")
                 break

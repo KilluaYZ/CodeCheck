@@ -72,14 +72,15 @@ def add_project():
     try:
         project_name = request.json.get('projectName')
         is_public = request.json.get('isPublic')
-
+        projectType = request.json.get('projectType')
         check.checkFrontendArgsIsNotNone([
             {"key": "projectName", "val": project_name},
             {"key": "isPublic", "val": is_public},
+            {"key": "projectType", "val": projectType}
         ])
         user = check_user_before_request(request)
         userId = user['id']
-        project_id = project_sqls_insert(project_name, is_public, userId)
+        project_id = project_sqls_insert(project_name, is_public, projectType, userId)
         return build_success_response(data={"projectId":project_id})
 
     except NetworkException as e:

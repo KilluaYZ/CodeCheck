@@ -30,6 +30,7 @@ def project_sqls_query_project_sql(query_param: dict) -> list:
     sql_select = (' select distinct projects.id as projectId, '
                   ' projects.name as projectName, '
                   ' projects.isPublic as isPublic, '
+                  ' projects.projectType as projectType, '
                   ' projects.userId as userId, '
                   ' users.userName as userName, '
                   ' projects.createTime as createTime '
@@ -41,6 +42,9 @@ def project_sqls_query_project_sql(query_param: dict) -> list:
     if 'id' in query_param:
         args_str_list.append(f' and projects.id = %s ')
         args_val_list.append(query_param['id'])
+    if 'projectType' in query_param:
+        args_str_list.append(f' and projects.projectType = %s ')
+        args_val_list.append(query_param['projectType'])
     if 'exact_name' in query_param:
         args_str_list.append(f' and projects.name = %s ')
         args_val_list.append(query_param['exact_name'])
@@ -54,6 +58,7 @@ def project_sqls_query_project_sql(query_param: dict) -> list:
         args_str_list.append(f' and projects.userId = %s ')
         args_val_list.append(query_param['userId'])
 
+
     sql = sql_select
 
     for item in args_str_list:
@@ -64,9 +69,9 @@ def project_sqls_query_project_sql(query_param: dict) -> list:
     rows = execute_sql_query(pooldb, sql, tuple(args_val_list))
     return rows
 
-def project_sqls_insert(project_name: str, is_public: str, user_id: str, trans=None):
-    sql = ' insert into projects(name, isPublic, userId) values(%s, %s, %s) '
-    args = (project_name, is_public, user_id)
+def project_sqls_insert(project_name: str, is_public: str, project_type: str, user_id: str, trans=None):
+    sql = ' insert into projects(name, isPublic, projectType, userId) values(%s, %s, %s, %s) '
+    args = (project_name, is_public, project_type, user_id)
     if trans is not None:
         return trans.execute(sql, args)
     return execute_sql_write(pooldb, sql, args)

@@ -8,3 +8,4 @@ flask_apscheduler
 erniebot
 py7zr
 rarfile
+cryptography

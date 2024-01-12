@@ -121,9 +121,12 @@ def upload_file():
         if fileSuffix == 'json':
             filePath = 'json'
             fileCategory = 'text'
-        else:
+        elif fileSuffix in ['zip', 'tar', 'gz', 'bz', 'rar', '7z']:
             filePath = 'zip'
             fileCategory = 'zip'
+        else:
+            filePath = 'json'
+            fileCategory = 'text'
 
         __mkdir_project_directory_if_not_exist(project_id)
         # file.save(os.path.join(BASE_FILE_STORE_DIR, filePath))

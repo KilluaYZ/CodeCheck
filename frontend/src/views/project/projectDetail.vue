@@ -24,7 +24,7 @@
                         <el-tabs class='left_tabs' v-model='activeName' type='border-card'>
                             <el-tab-pane label='问题' name='first' >
                                 <div style='height: 100%; width: 100%;'>
-                                    <el-scrollbar>
+                                    <el-scrollbar v-if="displayProblemListInJsonProjectMode">
                                         <el-row v-for='(problem ,index) in ProblemsList'>
                                             <ProblemCard
                                                 :problem-id='problem.problemId'
@@ -37,6 +37,52 @@
                                             />
                                         </el-row>
                                     </el-scrollbar>
+                                    <div v-if="displayProblemListInOtherProjectMode" style="width: 100%; height: 100%">
+<!--                                        <div v-bind="virtual_list_containerProps">-->
+<!--                                            <div v-bind="virtual_list_wrapperProps">-->
+<!--                                                <div -->
+<!--                                                    v-for="problem in virtual_list_list"-->
+<!--                                                    :key="problem"-->
+<!--                                                >-->
+<!--                                                    <el-row>-->
+<!--                                                        <p>ID: {{problem.data.problemId}}</p>-->
+<!--                                                        <p>FilePath: {{problem.data.filePath}}</p>-->
+<!--                                                        <p>value: {{problem.data.problemId}}</p>-->
+<!--                                                        <el-button @click="goToFileLineByFilePathAndLine(problem.filePath, problem.problemDetail.line)">跳转</el-button>-->
+<!--                                                    </el-row>-->
+<!--                                                </div>-->
+<!--                                            </div>-->
+<!--                                        </div>                                        -->
+
+                                        <DynamicScroller
+                                            :items="ProblemsList"
+                                            :min-item-size="10"
+                                            key-field="problemId"
+
+                                        >
+                                            <template v-slot="{ problem, index, active }">
+                                                <DynamicScrollerItem
+                                                    :item="problem"
+                                                    :active="active"
+                                                    :size-dependencies="[problem.problemId, problem.filePath, problem.problemDetail.value, item.problemDetail.line]"
+                                                    :data-index="index"
+                                                >
+                                                    <ProblemCard
+                                                        :problem-id='problem.problemId'
+                                                        :file-path='problem.filePath'
+                                                        :problem-class-name='problem.problemClassName'
+                                                        :problem-detail-json-string='problem.problemDetail'
+                                                        :problem-severity='problem.severity'
+                                                        :id='index+1'
+                                                        :go-to-line='goToFileLineByFilePathAndLine'
+
+                                                    />
+
+                                                </DynamicScrollerItem>
+                                            </template>
+
+                                        </DynamicScroller>
+                                    </div>
                                 </div>
                             </el-tab-pane>
                             <el-tab-pane label='AI助手' name='second' style='height: 100%'>
@@ -196,7 +242,7 @@
 import { useRoute } from 'vue-router'
 import request from '@/utils/request'
 import { getFile } from '@/api/file'
-import { onMounted, reactive, ref, toRef } from 'vue'
+import { onMounted, reactive, ref, toRef, computed } from 'vue'
 import type Node from 'element-plus/es/components/tree/src/model/node'
 import { Storage } from '@/utils/cache'
 import { getProjectProblems } from '@/api/project'
@@ -206,10 +252,12 @@ import chatAi from '@/api/ai'
 import { types } from 'sass'
 import List = types.List
 import AiAvatar from '@/assets/images/AiAvatar.jpg'
+import { useVirtualList } from '@vueuse/core'
+
 type TraceType = {}
 type FileType = {fileName: string, fileCategory: string, filePath: string, fileType: string, children: {fileName: string, fileCategory: string}[]}
 type ProblemClassType = {severity: string, profile: string}
-type ProblemType = {problemId: number, filePath: string, problemClassName: string, problemDetail: string, severity: string, description: string, problem_class: ProblemClassType}
+type ProblemType = {problemId: number, filePath: string, problemClassName: string, problemDetail: string, severity: string, description: string, problem_class: ProblemClassType, problemType: string}
 type CodeType = {content: string, problem: ProblemType[], trace: TraceType[]}
 const codes = ref<{}>([])
 const route = useRoute();
@@ -219,6 +267,8 @@ const font_size = ref(18)
 const activeName = ref('first')
 const displayCode = ref(false)
 const displayDir = ref(false)
+const displayProblemListInJsonProjectMode = ref(false)
+const displayProblemListInOtherProjectMode = ref(false)
 const pathStack = ref<{ fileCategory: string, fileName: string }[]>([
     // {
     //     "fileCategory": "directory",
@@ -233,6 +283,10 @@ const pathStack = ref<{ fileCategory: string, fileName: string }[]>([
     //     "fileName": "1.c"
     // }
 ])
+
+var virtual_list_list = null
+var virtual_list_containerProps = null
+var virtual_list_wrapperProps = null
 
 const dirData = ref<FileType[]>([])
 const selected_text = ref("")
@@ -387,10 +441,27 @@ const goToDirOrFileByFilePathAndFileName = (filePath: string, fileName: string, 
     }
     return goToDirOrFile();
 }
-const ProblemsList = ref([])
+const ProblemsList = ref<ProblemType[]>([])
 const getProblemInfo = () => {
     getProjectProblems(projectId).then(res => {
         ProblemsList.value = res.data;
+        if(ProblemsList.value.length > 0){
+            if(ProblemsList.value[0].problemType == "json"){
+                displayProblemListInJsonProjectMode.value = true;
+            }else if(ProblemsList.value[0].problemType == "other"){
+                displayProblemListInOtherProjectMode.value = true;
+                const { list, containerProps, wrapperProps } = useVirtualList(
+                    ProblemsList.value,
+                    {
+                        itemHeight: 22
+                    }
+                )
+
+                virtual_list_list = list;
+                virtual_list_wrapperProps = wrapperProps;
+                virtual_list_containerProps = containerProps;
+            }
+        }
     })
 }
 
@@ -473,6 +544,9 @@ const startNewChat = () => {
     chatHistory.value = chat_histroy;
     chatAiUpdateChatHistory(chat_histroy)
 }
+
+
+
 
 onMounted(initInfo)
 onMounted(initChatHistory)

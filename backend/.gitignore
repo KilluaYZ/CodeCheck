@@ -106,3 +106,4 @@ venv.bak/
 
 /readio_server_runtime_data
 nohup.out
+/code_check_shower_server_data/

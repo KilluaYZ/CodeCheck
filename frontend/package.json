@@ -13,6 +13,7 @@
     "@highlightjs/vue-plugin": "^2.1.0",
     "@kangc/v-md-editor": "^2.3.17",
     "@syncfusion/ej2-vue-layouts": "^23.1.36",
+    "@vueuse/core": "^10.7.1",
     "axios": "^1.6.0",
     "element-plus": "^2.4.1",
     "highlight.js": "^11.9.0",

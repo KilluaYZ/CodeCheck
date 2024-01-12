@@ -1,9 +1,9 @@
 SECRET_KEY = 'ruc'
-MYSQL_HOST = '10.47.40.87'
+MYSQL_HOST = 'localhost'
 MYSQL_PORT = 3306
 MYSQL_USER = 'root'
-MYSQL_PASSWORD = 'splandidliver41'
-MYSQL_DATABASE = 'codecheckshower_db'
+MYSQL_PASSWORD = '123456'
+MYSQL_DATABASE = 'codecheck_db'
 AI_API_TYPE = 'qianfan'
 AI_ACCESS_KEY = "61LSVpKQkIAxRGoxGq1Ez6lT"
 AI_SECURITY_KEY = "4uFsoZ3O9GxPzEGlTieNjYpkcWqFVMij"

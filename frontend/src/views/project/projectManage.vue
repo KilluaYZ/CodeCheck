@@ -44,15 +44,22 @@
                 <el-form-item label='项目名' prop='projectName'>
                     <el-input v-model='form.projectName' placeholder='请输入项目名' clearable />
                 </el-form-item>
-                <el-form-item label='是否公开' prop='isPublic'>
-                    <el-switch
-                        v-model="form.isPublic"
-                        active-text="公开"
-                        inactive-text="私有"
-                    />
-                </el-form-item>
+<!--                <el-form-item label='是否公开' prop='isPublic'>-->
+<!--                    <el-switch-->
+<!--                        v-model="form.isPublic"-->
+<!--                        active-text="公开"-->
+<!--                        inactive-text="私有"-->
+<!--                    />-->
+<!--                </el-form-item>-->
 
-                <el-form-item label='json分析结果'>
+                <el-form-item label="项目类型" prop="projectType">
+                    <el-radio-group v-model="form.projectType">
+                        <el-radio label="json" size="large">Json</el-radio>
+                        <el-radio label="other" size="large">其他</el-radio>
+                    </el-radio-group>
+                    <el-text type="danger">json类型项目需要上传json格式解析文件，其他类型项目需要上传对应的解析文件</el-text>
+                </el-form-item>
+                <el-form-item label='分析结果文件'>
                     <el-upload
                         ref="uploadJson"
                         action=""
@@ -68,11 +75,11 @@
 <!--                        <el-button class="ml-3" type="success" @click="submitUpload">-->
 <!--                            upload to server-->
 <!--                        </el-button>-->
-                        <template #tip>
-                            <div class="el-upload__tip text-red">
-                                支持后缀名为json的文件
-                            </div>
-                        </template>
+<!--                        <template #tip>-->
+<!--                            <div class="el-upload__tip text-red">-->
+<!--                                支持后缀名为json的文件-->
+<!--                            </div>-->
+<!--                        </template>-->
                     </el-upload>
                 </el-form-item>
 
@@ -128,12 +135,14 @@ const onClickAddProjectBtn = () => {
 
 const form = ref({
     projectName: "",
-    isPublic: false
+    isPublic: false,
+    projectType: "other"
 })
 
 const resetForm = () => {
     form.value.projectName = "";
     form.value.isPublic = false;
+    form.value.projectType = "other"
 }
 
 // const data = ref([
@@ -150,7 +159,8 @@ type ProjectType = {
     projectStatus: string,
     isPublic: boolean,
     createTime: string,
-    problemNum: number
+    problemNum: number,
+    projectType: string
 }
 const data = ref<ProjectType[]>([])
 const uploadJson = ref<UploadInstance>()
@@ -204,7 +214,7 @@ const onClickCommitBtn = () => {
         text: '正在上传文件，请稍候',
         background: 'rgba(0, 0, 0, 0.7)'
     });
-    addProject(form.value.projectName, form.value.isPublic).then((res) => {
+    addProject(form.value.projectName, form.value.isPublic, form.value.projectType).then((res) => {
         let projectId = res.data.projectId;
         if(currentJsonFile.value !== undefined){
             readinFile(currentJsonFile.value).then((jsonResult: {name: string, content: string}) => {
@@ -244,16 +254,17 @@ var globalProjectId = '';
 const handleJsonUploadChanged = (currentUploadFile: UploadFile, currentUploadFiles: UploadFiles) => {
     console.log("当前file")
     console.log(currentUploadFile)
-    if(!checkIfFileTypeInList(currentUploadFile, ['json'])){
-        ElMessage({
-            type: 'error',
-            message: '请选择格式正确的JSON文件，注意：文件一定要以.json为后缀'
-        })
-        currentJsonFile.value = undefined;
-        return ;
-    }else{
-        currentJsonFile.value = currentUploadFile;
-    }
+    // if(!checkIfFileTypeInList(currentUploadFile, ['json'])){
+    //     ElMessage({
+    //         type: 'error',
+    //         message: '请选择格式正确的JSON文件，注意：文件一定要以.json为后缀'
+    //     })
+    //     currentJsonFile.value = undefined;
+    //     return ;
+    // }else{
+    //     currentJsonFile.value = currentUploadFile;
+    // }
+    currentJsonFile.value = currentUploadFile;
 }
 
 const handleSrcUploadChanged = (currentUploadFile: UploadFile, currentUploadFiles: UploadFiles) => {

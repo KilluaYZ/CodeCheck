@@ -1,8 +1,9 @@
 import request from '@/utils/request'
-export function addProject(projectName: string, isPublic: boolean){
+export function addProject(projectName: string, isPublic: boolean, projectType: string){
     const data = {
         projectName,
-        isPublic
+        isPublic,
+        projectType
     }
     return request({
         url: 'project/add',

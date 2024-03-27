@@ -16,14 +16,14 @@
                 ></el-avatar>
                 <el-dropdown class="ml20">
                     <span class="el-dropdown-link">
-                        {{userInfo.username}}
+                        {{userInfo.userName}}
                         <el-icon class="el-icon--right">
                             <arrow-down />
                         </el-icon>
                     </span>
                     <template #dropdown>
                         <el-dropdown-menu>
-                            <el-dropdown-item>个人中心</el-dropdown-item>
+                            <el-dropdown-item @click="goToPersonalPage">个人中心</el-dropdown-item>
                             <el-dropdown-item @click="isVisible = !isVisible">退出登陆</el-dropdown-item>
                         </el-dropdown-menu>
                     </template>
@@ -47,6 +47,7 @@ import { onMounted, ref } from 'vue'
 import Crumb from './Crumb.vue'
 import { Storage } from '@/utils/cache'
 import { getUserInfo } from '@/utils/auth'
+import router from '@/router'
 
 const useStore = useMenuStore()
 const isVisible = ref(false)
@@ -70,6 +71,12 @@ const logout = () => {
 const initInfo = () => {
     userInfo.value =  getUserInfo()
     console.log(userInfo.value)
+}
+
+const goToPersonalPage = () => {
+    router.push({
+        path: "/personal"
+    })
 }
 
 onMounted(initInfo)

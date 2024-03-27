@@ -8,12 +8,10 @@ from flask import Flask, url_for, g
 from flask_cors import CORS  # 跨域
 import config
 # app
-from codecheck.auth import appAuth
-from codecheck.ai import ai_chat
-from codecheck.database.init_db import init_db
-from codecheck.monitor.monitor import monitor
-from codecheck.manage import file_manage, project_manage
-# from codecheck.utils.json import UpdatedJsonProvider
+from codecheck.user import user
+# from codecheck.ai import ai_chat
+# from codecheck.monitor.monitor import monitor
+# from codecheck.manage import project_manage
 
 test_cnt = 0
 
@@ -38,15 +36,14 @@ def create_app(test_config=None):
 
     app.config.from_object(config)
 
-    app.register_blueprint(monitor, url_prefix='/monitor')
-    app.register_blueprint(appAuth.bp)
-    app.register_blueprint(file_manage.bp)
-    app.register_blueprint(project_manage.bp)
-    app.register_blueprint(ai_chat.bp)
+    # app.register_blueprint(monitor, url_prefix='/monitor')
+    app.register_blueprint(user.bp)
+    # app.register_blueprint(project_manage.bp)
+    # app.register_blueprint(ai_chat.bp)
 
     # 配置定时任务
     # 该任务作用是每个一个小时检查一次user_token表，将超过1天未活动的token删掉（随便定的，后面改
-    from codecheck.auth.appAuth import checkSessionsAvailability
+    from codecheck.user.user import checkSessionsAvailability
     scheduler = BackgroundScheduler()
     scheduler.add_job(func=checkSessionsAvailability,
                       id='checkSessionsAvailability',
@@ -55,7 +52,7 @@ def create_app(test_config=None):
                       replace_existing=True
                       )
     # 该任务作用是每一个小时检查一次check_code_session_key表，删除超过10分钟的过期令牌
-    from codecheck.auth.appAuth import checkCheckCodeSessionKeysAvailability
+    from codecheck.user.user import checkCheckCodeSessionKeysAvailability
     scheduler.add_job(func=checkCheckCodeSessionKeysAvailability,
                       id='checkCheckCodeSessionKeysAvailability',
                       trigger='interval',

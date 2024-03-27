@@ -3,7 +3,7 @@ import NProgress from '../utils/nprogress'
 import Layout from '@/layout/index.vue'
 import { Storage } from '../utils/cache'
 
-import { System, Project } from './models'
+import { System, Project, Personal } from './models'
 
 const routes: Array<RouteRecordRaw> = [
 	{
@@ -22,8 +22,8 @@ const routes: Array<RouteRecordRaw> = [
 	// ...Other,
 	// ...Elements,
 	...Project,
-	...System
-
+	...System,
+	...Personal
 ]
 
 const router: Router = createRouter({

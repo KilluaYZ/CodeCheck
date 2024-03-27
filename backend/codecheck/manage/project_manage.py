@@ -2,26 +2,22 @@
 项目管理
 """
 from flask import Blueprint, request, send_file
-import codecheck.database.connectPool
-from typing import BinaryIO
-from codecheck.database.SQLUtils import *
-from codecheck.utils.buildResponse import *
-from codecheck.utils.auth import *
-import codecheck.utils.check as check
-from codecheck.database.sqls.project_sqls import *
-from codecheck.database.sqls.task_sqls import *
-from codecheck.database.sqls.problem_sqls import *
+from codecheck.utils.build_response import *
 from codecheck.analyser.analyser import CodeAnalyzer
-bp = Blueprint('projectManage', __name__, url_prefix='/project')
-pooldb = codecheck.database.connectPool.pooldb
+from codecheck.database.Mongo import Mongo
+from codecheck.utils.Tools import *
+from codecheck.utils.Tools import *
 
+bp = Blueprint('projectManage', __name__, url_prefix='/project')
+
+mongo = Mongo()
 
 @bp.route('/get/list', methods=['GET'])
 def get_project_list():
     try:
         user = check_user_before_request(request)
         userId = user['id']
-        rows = project_sqls_query_project_sql({"userId": userId})
+        rows = mongo.find('Project', {})
 
         for i in range(len(rows)):
             project_id = rows[i]['projectId']

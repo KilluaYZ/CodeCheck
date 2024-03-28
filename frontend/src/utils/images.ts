@@ -17,16 +17,16 @@ export function getImageBase64WithCache(imgSrcList: Ref<Array<string>>, idx: num
     if(fileObj !== null){
         imgSrcList.value[idx] = getImgSrcByFileObj(fileObj);
         console.log("using cache")
-        console.log(fileObj)
-        console.log(imgSrcList.value[idx])
+        // console.log(fileObj)
+        // console.log(imgSrcList.value[idx])
         return;
     }
     getFileObjByFileId(fileId).then((res) => {
         let fileObj = res.data;
         Storage.setItem(fileObj.fileId, fileObj);
         console.log("request server")
-        console.log(fileObj)
-        console.log(imgSrcList.value[idx])
+        // console.log(fileObj)
+        // console.log(imgSrcList.value[idx])
         imgSrcList.value[idx] = getImgSrcByFileObj(fileObj);
     })
 }

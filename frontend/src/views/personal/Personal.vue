@@ -1,5 +1,5 @@
 <template>
-  <el-row style="flex-direction: column; justify-content: start; align-items: center;width: 100%; height: 100%; margin-top: 140px;">
+  <el-row style="flex-direction: column; justify-content: start; align-items: center;width: 100%; height: 100%; margin-top: 140px;background: #ffffff">
     <el-row style="flex-direction: column; justify-content: center; align-items: center;width: 90%; height: fit-content; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); border-radius: 10px; padding: 0 20px 50px 20px ">
       <el-avatar @click="onClickAvatar" :size="120" style="margin-top: -60px; box-shadow: 0 0px 5px 2px rgba(0, 0, 0, 0.19); margin-bottom: 30px; border-radius: 50%;" :src="bigAvatarSrc[0]"/>
       <el-row justify="center" align="middle">
@@ -156,7 +156,10 @@ import {ElMessage, genFileId, UploadFile, UploadInstance, UploadProps, UploadRaw
 import {getFileObjByFileId, uploadFileAPI} from '@/api/file'
 import {getImgSrcByFileObj, getImages, getImageBase64WithCache} from '@/utils/images'
 import {Plus} from "@element-plus/icons-vue";
+import { UserAvatarList } from '@/types'
 // import {Base64} from "js-base64";
+
+
 
 const tabActivateName = ref("first")
 const updateAvatarDialogShow = ref(false)
@@ -194,21 +197,22 @@ const handleExceed: UploadProps['onExceed'] = (files) =>{
 const CurrentUploadAvatarFile = ref<UploadFile>()
 
 const handleUploadChanged = (currentUploadFile: UploadFile, currentUploadFiles: UploadFiles) => {
-  console.log("当前file")
-  console.log(currentUploadFile)
-  CurrentUploadAvatarFile.value = currentUploadFile;
-  //检查是不是excel文件
-  let fileName = currentUploadFile.name;
-  let fileType = fileName.slice(fileName.lastIndexOf(".")+1);
-  console.log("fileType = "+fileType)
-  if(fileType !== "png" && fileType !== "jpg" && fileType !== "jpeg" && fileType !== "webp" && fileType !== "gif"){
-    uploadFile.value!.clearFiles()
-    ElMessage({
-      message:"文件格式错误，请上传图片",
-      type:"error"
-    })
-  }
-  uploadAvatarImageUrl.value = URL.createObjectURL(currentUploadFile.raw)
+
+    console.log('当前file')
+    console.log(currentUploadFile)
+    CurrentUploadAvatarFile.value = currentUploadFile
+    //检查是不是excel文件
+    let fileName = currentUploadFile.name
+    let fileType = fileName.slice(fileName.lastIndexOf('.') + 1)
+    console.log('fileType = ' + fileType)
+    if (fileType !== 'png' && fileType !== 'jpg' && fileType !== 'jpeg' && fileType !== 'webp' && fileType !== 'gif') {
+        uploadFile.value!.clearFiles()
+        ElMessage({
+            message: '文件格式错误，请上传图片',
+            type: 'error'
+        })
+    }
+    uploadAvatarImageUrl.value = URL.createObjectURL(currentUploadFile.raw)
 }
 
 const onClickSubmitAvatarToServerBtn = () => {
@@ -278,11 +282,16 @@ const getNewUserProfile = () => {
 const onClickAvatar = () => {
   getAvatarList().then(() => {
     updateAvatarDialogShow.value = true
+  }).catch((e) => {
+
   })
 
 }
 
-const avatarList = ref([])
+const avatarList = ref<UserAvatarList>({
+    userHistoryFileList: [],
+    systemAvatarList: []
+})
 const userHistoryAvatarImgSrc = ref(Array(100))
 const systemAvatarImgSrc = ref(Array(100))
 const getAvatarList = () => {
@@ -304,7 +313,7 @@ const getAvatarList = () => {
 }
 
 
-const onClickAvatarUpdate = (fileId) => {
+const onClickAvatarUpdate = (fileId: string) => {
   updateAvatarListAPI(fileId).then((res) => {
     ElMessage({
       type: "success",

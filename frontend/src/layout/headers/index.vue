@@ -12,7 +12,7 @@
             <el-icon @click="OpenFullScreen" size="16" class="pointer"><FullScreen /></el-icon>
             <div class="user ml20 flex pointer">
                 <el-avatar
-                    src="http://thirdqq.qlogo.cn/g?b=oidb&k=REYMpW1m0CGfb5pHYeaibvQ&s=100&t=1624209837"
+                    :src="userAvatarSrc[0]"
                 ></el-avatar>
                 <el-dropdown class="ml20">
                     <span class="el-dropdown-link">
@@ -48,10 +48,12 @@ import Crumb from './Crumb.vue'
 import { Storage } from '@/utils/cache'
 import { getUserInfo } from '@/utils/auth'
 import router from '@/router'
+import { UserInfo } from '@/types'
+import { getImageBase64WithCache } from '@/utils/images'
 
 const useStore = useMenuStore()
 const isVisible = ref(false)
-const userInfo = ref({});
+const userInfo = ref<UserInfo>({})
 /**
  * 进入全屏
  */
@@ -71,6 +73,7 @@ const logout = () => {
 const initInfo = () => {
     userInfo.value =  getUserInfo()
     console.log(userInfo.value)
+    init_avatar()
 }
 
 const goToPersonalPage = () => {
@@ -78,6 +81,12 @@ const goToPersonalPage = () => {
         path: "/personal"
     })
 }
+const userAvatarSrc = ref(Array(5))
+
+const init_avatar = () => {
+    getImageBase64WithCache(userAvatarSrc, 0, userInfo.value.avatar);
+}
+
 
 onMounted(initInfo)
 </script>

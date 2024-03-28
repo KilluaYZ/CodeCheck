@@ -256,14 +256,7 @@ function onClickLoginBtn(){
         setToken(token);
         userProfile().then(res => {
             let userInfo = res.data.userInfo;
-            let userName = userInfo.userName;
-            let params = {
-                username: userName,
-                level: 'admin',
-                avatar: 'https://i.gtimg.cn/club/item/face/img/2/16022_100.gif'
-            }
-            // Storage.setItem('userinfo', params)
-            setUserInfo(params);
+            setUserInfo(userInfo);
             location.reload()
         })
     }).catch((res) => {

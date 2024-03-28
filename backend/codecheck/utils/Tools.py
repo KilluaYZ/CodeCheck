@@ -39,16 +39,16 @@ def update_token_visit_time(token):
 
 def check_tokens_get_state(token, roles):
     if token is None:
-        raise Exception(404)
+        raise Exception(401)
     # print('token=',token)
     if not check_if_token_exist(token):
-        # 如果查不到这个token，就返回404
-        return 404
+        # 如果查不到这个token，就返回401
+        return 401
 
     user = get_user_by_token(token)
     if user is None:
         # 查无此人
-        return 404
+        return 401
     if roles == 'admin':
         if user['roles'] != 'admin':
             # 没有权限

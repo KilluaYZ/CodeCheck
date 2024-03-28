@@ -5,3 +5,4 @@ flask_apscheduler
 erniebot
 cryptography
 pymongo
+paramiko

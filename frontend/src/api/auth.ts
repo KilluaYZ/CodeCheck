@@ -100,7 +100,7 @@ export function userProfile(){
     })
 }
 
-export function changeUserProfile(data: object){
+export function changeUserProfile(data: any){
     const payload = {
         "userName": data.userName,
         "signature": data.signature,

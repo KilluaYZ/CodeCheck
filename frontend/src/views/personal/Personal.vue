@@ -151,10 +151,10 @@
 <script setup lang="ts">
 import {getUserInfo, setUserInfo} from "@/utils/auth.js";
 import {onMounted, ref} from "vue";
-import { changeUserProfile, userProfile, getAvatarListAPI, updateAvatarListAPI } from '../../api/auth.ts'
+import { changeUserProfile, userProfile, getAvatarListAPI, updateAvatarListAPI } from '@/api/auth'
 import {ElMessage, genFileId, UploadFile, UploadInstance, UploadProps, UploadRawFile} from "element-plus";
-// import {getFileObjByFileId, uploadFileAPI} from '@/api/file.js'
-// import {getImgSrcByFileObj, getImages, getImageBase64WithCache} from '@/utils/images'
+import {getFileObjByFileId, uploadFileAPI} from '@/api/file'
+import {getImgSrcByFileObj, getImages, getImageBase64WithCache} from '@/utils/images'
 import {Plus} from "@element-plus/icons-vue";
 // import {Base64} from "js-base64";
 

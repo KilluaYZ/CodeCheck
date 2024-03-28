@@ -1,50 +1,46 @@
 import request from '@/utils/request'
-import axios from 'axios'
-import { getToken } from '@/utils/auth'
 
-export function uploadFile(projectId: string, fileName: string, fileContent: string){
+export function getFileObjByFileId(fileId: string){
     const data = {
-        projectId,
+        fileId
+    }
+    return request({
+        url: 'file/getFileObjByFileId',
+        method: 'post',
+        data: data
+    })
+}
+
+export function getByFileId(fileId: string){
+    const args = {
+        fileId
+    }
+    return request({
+        url: 'file/getByFileId',
+        method: 'get',
+        params: args
+    })
+}
+
+export function getFileObjListByQuery(data:any){
+    return request({
+        url: 'file/getFileObjListByQuery',
+        method: 'post',
+        data: data
+    })
+}
+
+export function uploadFileAPI(fileName:string, fileContent:string, fileType:string, isPrivate:boolean){
+    const data = {
         fileName,
-        fileContent
+        fileContent,
+        isPrivate,
+        fileType
     }
     return request({
-        url: 'file/upload',
-        method: 'post',
-        data: data
-    })
-
-    // let formData = new FormData();
-    // formData.append('fileContent', fileContent);
-    // formData.append('projectId', projectId);
-    // formData.append('fileName', fileName);
-    // return axios.post('url/upload', formData, {
-    //     headers: {
-    //         "Content-Type": "multipart/form-data",
-    //         "Authorization": getToken()
-    //     }
-    // })
-
-    // return request({
-    //     url: 'file/upload',
-    //     method: 'post',
-    //     data: formData,
-    //     headers:{
-    //         'Content-Type': 'multipart/form-data'
-    //     }
-    // })
-}
-
-export function getFile(projectId: number, filePath: string, fileName: string){
-    let data = {
-        projectId,
-        filePath,
-        fileName
-    }
-
-    return request({
-        url: 'file/getFile',
+        url: 'file/uploadFile',
         method: 'post',
         data: data
     })
 }
+

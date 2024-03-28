@@ -12,7 +12,7 @@ from codecheck.user import user
 # from codecheck.ai import ai_chat
 # from codecheck.monitor.monitor import monitor
 # from codecheck.manage import project_manage
-
+from codecheck.file import fileManage
 test_cnt = 0
 
 # 创建flask app
@@ -38,6 +38,7 @@ def create_app(test_config=None):
 
     # app.register_blueprint(monitor, url_prefix='/monitor')
     app.register_blueprint(user.bp)
+    app.register_blueprint(fileManage.bp)
     # app.register_blueprint(project_manage.bp)
     # app.register_blueprint(ai_chat.bp)
 

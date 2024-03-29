@@ -37,9 +37,7 @@ def authorizeUserIdPassword(userId: ObjectId, password: str):
 def register_user_sql(userName, password, email):
     # execute_sql_write(pooldb, 'insert into users(username,password,email) values(%s,%s,%s)',
     #                   (userName, generate_password_hash(password), email))
-    logger.logger.debug("BUG")
-    logger.logger.debug({"userName": userName, "password": generate_password_hash(password), "email": email, "crateTime": datetime.datetime.now(), "avatar": ['https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'], 'roles': 'common', 'signature': '这个人无话可说~', 'sex': 'female'})
-
+    logger.logger.debug({"userName": userName, "password": generate_password_hash(password), "email": email, "crateTime": datetime.datetime.now(), "avatar": [ObjectId('66069dd29aeb444319eb5466')], 'roles': 'common', 'signature': '这个人无话可说~', 'sex': 'female'})
     return mongo.insert_one("User", {"userName": userName, "password": generate_password_hash(password), "email": email, "crateTime": datetime.datetime.now(), "avatar": [ObjectId('66052a3659b8a3a6a13eca88')], 'roles': 'common', 'signature': '这个人无话可说~', 'sex': 'female'})
 
 

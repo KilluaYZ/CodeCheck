@@ -32,6 +32,7 @@ class DockerContainer:
 
 class DockerManager:
     def __init__(self):
+        pass
 
     def get_container_by_project_id(self):
         pass

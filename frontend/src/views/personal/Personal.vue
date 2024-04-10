@@ -114,12 +114,13 @@
 
       <el-tabs v-model="tabActivateName" style="width: 100%">
         <el-tab-pane label="插图" name="first">
-          <template v-for="(avatar, index) in avatarList.userHistoryFileList">
-<!--            <span>{{getImgSrcByFileObj(avatar)}}</span>-->
+            <el-divider content-position="left">用户上传</el-divider>
+          <template v-if="avatarList.userHistoryFileList.length" v-for="(avatar, index) in avatarList.userHistoryFileList">
             <el-image style="width: 100px; height:100px" @click="onClickAvatarUpdate(avatar)" :src="userHistoryAvatarImgSrc[index]" />
           </template>
+            <el-row v-else style="width: 100%" justify="center" align="middle">用户暂未上传头像~</el-row>
 
-          <el-divider />
+          <el-divider content-position="left">系统预设</el-divider>
 
           <template v-for="(avatar, index)  in avatarList.systemAvatarList">
             <el-image style="width: 100px; height:100px" @click="onClickAvatarUpdate(avatar)" :src="systemAvatarImgSrc[index]" />

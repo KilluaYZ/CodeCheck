@@ -2,7 +2,8 @@ flask
 flask_cors
 psutil
 flask_apscheduler
+apscheduler
 erniebot
 cryptography
 pymongo
-paramiko
+docker

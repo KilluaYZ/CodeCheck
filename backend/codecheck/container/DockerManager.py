@@ -4,6 +4,8 @@ from codecheck.database.Mongo import Mongo
 import random
 import datetime
 mongo = Mongo()
+import config
+import os
 
 class DockerContainer:
     def __init__(self):
@@ -55,9 +57,11 @@ class DockerContainer:
         }
 
 class DockerManager:
-    def __init__(self, host='127.0.0.1'):
+    def __init__(self, host='127.0.0.1', share_dir=config.SHARE_DIR, container_img=config.DOCKER_IMAGE):
         self.host = host
         self.client = docker.from_env()
+        self.share_dir = share_dir
+        self.container_img = container_img
 
     def get_container_by_container_id(self, container_id: str) -> DockerContainer:
         row = mongo.find_one('Container', {"container_id": container_id})
@@ -77,7 +81,20 @@ class DockerManager:
         host_ports = self.get_available_ports()
         container = DockerContainer()
         container.from_dict(host_ports)
-        container.share_dir  = f"/share/{datetime.datetime.now().timestamp()}"
+        container.share_dir = f"{self.share_dir}/{datetime.datetime.now().timestamp()}"
+        os.makedirs(container.share_dir, exist_ok=True)
+        container_obj = self.client.containers.run(
+            image=self.container_img,
+            ports={f'22/tcp':container.ssh_port, f'87/tcp': container.ws_port},
+            volumes=[f'{container.share_dir}:/share'],
+            detach=True,
+            init=True,
+            tty=True
+        )
+        container.container_id = container_obj.id
+        container.status = 'running'
+        mongo.insert_one("Container", container.to_dict())
+        return container
 
 
     # 获取可用的ssh和ws的映射端口

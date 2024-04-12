@@ -19,7 +19,7 @@ const initTerm = () => {
       background: '#293c4b' //背景色
     }
   })
-  const socket = new WebSocket('ws://localhost:10022/ws')
+  const socket = new WebSocket('ws://localhost:49411/ws')
   const attachAddon = new AttachAddon(socket)
   const fitAddon = new FitAddon()
   term.loadAddon(attachAddon)

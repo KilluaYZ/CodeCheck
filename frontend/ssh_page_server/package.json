@@ -13,7 +13,6 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "node-pty": "^1.0.0",
     "os": "^0.1.2",
     "pinia": "^2.1.7",
     "sass": "^1.69.5",

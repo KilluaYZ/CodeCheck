@@ -3,9 +3,10 @@ import socket
 from codecheck.database.Mongo import Mongo
 import random
 import datetime
-mongo = Mongo()
 import config
 import os
+
+mongo = Mongo()
 
 class DockerContainer:
     def __init__(self):
@@ -21,8 +22,14 @@ class DockerContainer:
         if self.container_id is None:
             raise Exception('container_id is None')
         self.client = docker.from_env().containers.get(self.container_id)
-        if self.client.status != 'running':
-            self.client.start()
+        self.client.start()
+        self.client.exec_run("nohup node /root/ws_server/index.js &")
+        self.client.exec_run("service ssh start")
+        self.update_status('running')
+
+    def update_status(self, status: str):
+        self.status = status
+        mongo.update_one('Container', {"container_id": self.container_id}, {"$set": {"status": self.status}})
 
     def execute(self, command: str):
         if self.client is None:
@@ -95,6 +102,7 @@ class DockerManager:
         container.status = 'running'
         mongo.insert_one("Container", container.to_dict())
         return container
+
 
 
     # 获取可用的ssh和ws的映射端口

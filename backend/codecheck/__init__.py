@@ -13,6 +13,7 @@ from codecheck.user import user
 # from codecheck.monitor.monitor import monitor
 # from codecheck.manage import project_manage
 from codecheck.file import fileManage
+from codecheck.container import ContainerManage
 test_cnt = 0
 
 # 创建flask app
@@ -39,6 +40,7 @@ def create_app(test_config=None):
     # app.register_blueprint(monitor, url_prefix='/monitor')
     app.register_blueprint(user.bp)
     app.register_blueprint(fileManage.bp)
+    app.register_blueprint(ContainerManage.bp)
     # app.register_blueprint(project_manage.bp)
     # app.register_blueprint(ai_chat.bp)
 
@@ -62,7 +64,6 @@ def create_app(test_config=None):
                       )
     # 启动任务列表
     scheduler.start()
-
     return app
 
 app = create_app()

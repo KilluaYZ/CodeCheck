@@ -1,9 +1,8 @@
 import request from '@/utils/request'
-export function addProject(projectName: string, isPublic: boolean, projectType: string){
+export function addProject(projectName: string, containerId: string){
     const data = {
-        projectName,
-        isPublic,
-        projectType
+        name: projectName,
+        container_id: containerId
     }
     return request({
         url: 'project/add',
@@ -12,16 +11,27 @@ export function addProject(projectName: string, isPublic: boolean, projectType: 
     })
 }
 
+export function getProjectDetail(projectId: string){
+    const data = {
+        project_id: projectId
+    }
+    return request({
+        url: 'project/list',
+        method: 'post',
+        data: data
+    })
+}
+
 export function getProjectList(){
     return request({
-        url: 'project/get/list',
-        method: 'get'
+        url: 'project/list',
+        method: 'post'
     })
 }
 
 export function delProject(projectId: string){
     let data = {
-        projectId
+        project_id: projectId
     }
 
     return request({
@@ -31,26 +41,3 @@ export function delProject(projectId: string){
     })
 }
 
-export function getProjectProblems(projectId: number){
-    let data = {
-        projectId
-    }
-
-    return request({
-        url: 'project/problem/get',
-        method: 'post',
-        data: data
-    })
-}
-
-export function submitProject(projectId: number){
-    let data = {
-        projectId
-    }
-
-    return request({
-        url: 'project/submit',
-        method: 'post',
-        data: data
-    })
-}

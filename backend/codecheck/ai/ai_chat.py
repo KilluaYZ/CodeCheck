@@ -1,6 +1,6 @@
 from flask import Blueprint, request
 import codecheck.database.connectPool
-from codecheck.utils.buildResponse import *
+from codecheck.utils.build_response import *
 from codecheck.utils.auth import *
 from codecheck.database.SQLUtils import *
 import codecheck.utils.check as check

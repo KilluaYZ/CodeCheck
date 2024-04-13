@@ -19,6 +19,7 @@ const service = axios.create({
 
 // request拦截器
 service.interceptors.request.use(config => {
+    console.log("request拦截器")
     // 是否需要设置 token
     const isToken = (config.headers || {}).isToken === false
     // 是否需要防止数据重复提交
@@ -69,6 +70,7 @@ service.interceptors.request.use(config => {
 
 // 响应拦截器
 service.interceptors.response.use(res => {
+        console.log("拦截器捕捉")
         // 未设置状态码则默认成功状态
         const code = res.data.code || 200;
         console.log(res)
@@ -84,9 +86,6 @@ service.interceptors.response.use(res => {
                 isRelogin.show = true;
                 ElMessageBox.confirm('登录状态已过期，您可以继续留在该页面，或者重新登录', '系统提示', { confirmButtonText: '重新登录', cancelButtonText: '取消', type: 'warning' }).then(() => {
                     isRelogin.show = false;
-                    // store.dispatch('LogOut').then(() => {
-                    //     location.href = '/index';
-                    // })
                     logout()
                 }).catch(() => {
                     isRelogin.show = false;
@@ -123,6 +122,34 @@ service.interceptors.response.use(res => {
             message = "系统接口" + code + "异常：" + statusText + "， 错误信息：" + responseMsg;
         }
         ElMessage({ message: message, type: 'error', duration: 5 * 1000 })
+        let code:number = error.response.status;
+        let msg:string = error.response.data.msg || errorCode[code] || errorCode['default']
+        if (code === 401) {
+            if (!isRelogin.show) {
+                isRelogin.show = true;
+                ElMessageBox.confirm('登录状态已过期，您可以继续留在该页面，或者重新登录', '系统提示', { confirmButtonText: '重新登录', cancelButtonText: '取消', type: 'warning' }).then(() => {
+                    isRelogin.show = false;
+                    // store.dispatch('LogOut').then(() => {
+                    //     location.href = '/index';
+                    // })
+                    logout()
+                }).catch(() => {
+                    isRelogin.show = false;
+                });
+            }
+            return Promise.reject('无效的会话，或者会话已过期，请重新登录。')
+        } else if (code === 500) {
+            ElMessage({ message: msg, type: 'error' })
+            return Promise.reject(new Error(msg))
+        } else if (code === 601) {
+            ElMessage({ message: msg, type: 'warning' })
+            return Promise.reject('error')
+        } else if (code !== 200) {
+            ElNotification.error({ title: msg })
+            return Promise.reject('error')
+        } else {
+            return error.data
+        }
         return Promise.reject(error)
     }
 )

@@ -5,7 +5,7 @@ setup(
     version='1.0.0',
     packages=[
         'codecheck',
-        'codecheck.auth',
+        'codecheck.user',
         'codecheck.database',
         'codecheck.manage',
         'codecheck.utils',

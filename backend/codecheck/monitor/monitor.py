@@ -8,7 +8,7 @@ import sys
 import inspect
 
 from codecheck.utils import check
-from codecheck.utils.buildResponse import *
+from codecheck.utils.build_response import *
 from codecheck.utils.auth import check_user_before_request
 from codecheck.utils.myExceptions import NetworkException
 

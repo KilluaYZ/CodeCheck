@@ -5,7 +5,7 @@ export function login(email: string, password: string){
         password
     }
     return request({
-        url: 'auth/login',
+        url: 'user/login',
         headers: {
             isToken: false
         },
@@ -23,7 +23,7 @@ export function register(userName: string, email: string, password: string, chec
         sessionKey
     }
     return request({
-        url: 'auth/register',
+        url: 'user/register',
         headers: {
             isToken: false
         },
@@ -40,7 +40,7 @@ export function updatePwd(email: string, password: string, checkCode: string, se
         sessionKey
     }
     return request({
-        url: 'auth/updatePwd',
+        url: 'user/updatePwd',
         headers: {
             isToken: false
         },
@@ -55,7 +55,7 @@ export function getRegisterSessionKeyCheckCode(userName: string, email: string){
         "type":"register"
     }
     return request({
-        url: 'auth/getSessionKeyCheckCode',
+        url: 'user/getSessionKeyCheckCode',
         headers: {
             isToken: false
         },
@@ -70,7 +70,7 @@ export function getChangePwdSessionKeyCheckCode(email: string){
         "type":"changePasswd"
     }
     return request({
-        url: 'auth/getSessionKeyCheckCode',
+        url: 'user/getSessionKeyCheckCode',
         headers: {
             isToken: false
         },
@@ -84,7 +84,7 @@ export function checkIfEmailIsRegisted(email: string){
         email
     }
     return request({
-        url: 'auth/register/check',
+        url: 'user/register/check',
         headers:{
             isToken: false
         },
@@ -95,8 +95,40 @@ export function checkIfEmailIsRegisted(email: string){
 
 export function userProfile(){
     return request({
-        url: 'auth/profile',
-        method: 'get'
+        url: 'user/profile/get',
+        method: 'post'
     })
 }
 
+export function changeUserProfile(data: any){
+    const payload = {
+        "userName": data.userName,
+        "signature": data.signature,
+        "sex": data.sex ? 'male' : 'female'
+    }
+    return request({
+        url: 'user/profile/change',
+        method: 'post',
+        data: payload
+    })
+}
+
+export function getAvatarListAPI(){
+    const data = {}
+    return request({
+        url: 'user/avatar/list',
+        method: 'post',
+        data: data
+    })
+}
+
+export function updateAvatarListAPI(fileId: string){
+    const data = {
+        fileId
+    }
+    return request({
+        url: 'user/avatar/update',
+        method: 'post',
+        data: data
+    })
+}

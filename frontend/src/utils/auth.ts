@@ -1,4 +1,5 @@
 import { Storage } from '@/utils/cache'
+import { UserInfo } from '@/types'
 
 function logout(){
     Storage.removeItem('userInfo')
@@ -12,9 +13,8 @@ function setUserInfo(userInfo: any){
     Storage.setItem('userInfo', userInfo);
 }
 
-function getUserInfo(): any{
-    let userInfo: any = Storage.getItem('userInfo');
-    return userInfo;
+function getUserInfo(): UserInfo{
+    return Storage.getItem('userInfo');
 }
 
 function removeUserInfo(){

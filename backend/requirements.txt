@@ -1,11 +1,9 @@
 flask
-PyMySql
 flask_cors
-sqlalchemy
-DButils
 psutil
 flask_apscheduler
+apscheduler
 erniebot
-py7zr
-rarfile
 cryptography
+pymongo
+docker

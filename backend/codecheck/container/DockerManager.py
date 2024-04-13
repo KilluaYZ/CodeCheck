@@ -7,6 +7,7 @@ import config
 import os
 import shutil
 import threading
+from bson.objectid import ObjectId
 
 mongo = Mongo()
 
@@ -26,6 +27,7 @@ class DockerContainer:
         self.client = None
         self.name = None
         self.create_time = None
+        self.user_id = None
 
     def get_client(self):
         if self.container_id is None:
@@ -98,6 +100,8 @@ class DockerContainer:
             self.status = data['status']
         if 'name' in data:
             self.name = data['name']
+        if 'user_id' in data:
+            self.user_id = data['user_id']
 
     def to_dict(self) -> dict:
         return {
@@ -109,7 +113,8 @@ class DockerContainer:
             "container_id": self.container_id,
             "status": self.status,
             "name": self.name,
-            "create_time": self.create_time
+            "create_time": self.create_time,
+            "user_id": self.user_id
         }
 
 class DockerManager:
@@ -132,12 +137,13 @@ class DockerManager:
         container.share_dir = row['share_dir']
         return container
 
-    def run_container(self, name: str) -> DockerContainer:
+    def run_container(self, name: str, user_id: ObjectId) -> DockerContainer:
         # 先获取所有docker容器的端口占用情况
         host_ports = self.get_available_ports()
         container = DockerContainer()
         container.from_dict(host_ports)
         container.name = name
+        container.user_id = user_id
         container.create_time = datetime.datetime.now()
         row = mongo.insert_one("Container", container.to_dict())
         _id = row.inserted_id

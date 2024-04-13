@@ -38,22 +38,6 @@
                                         </el-row>
                                     </el-scrollbar>
                                     <div v-if="displayProblemListInOtherProjectMode" style="width: 100%; height: 100%">
-<!--                                        <div v-bind="virtual_list_containerProps">-->
-<!--                                            <div v-bind="virtual_list_wrapperProps">-->
-<!--                                                <div -->
-<!--                                                    v-for="problem in virtual_list_list"-->
-<!--                                                    :key="problem"-->
-<!--                                                >-->
-<!--                                                    <el-row>-->
-<!--                                                        <p>ID: {{problem.data.problemId}}</p>-->
-<!--                                                        <p>FilePath: {{problem.data.filePath}}</p>-->
-<!--                                                        <p>value: {{problem.data.problemId}}</p>-->
-<!--                                                        <el-button @click="goToFileLineByFilePathAndLine(problem.filePath, problem.problemDetail.line)">跳转</el-button>-->
-<!--                                                    </el-row>-->
-<!--                                                </div>-->
-<!--                                            </div>-->
-<!--                                        </div>                                        -->
-
                                         <DynamicScroller
                                             :items="ProblemsList"
                                             :min-item-size="10"

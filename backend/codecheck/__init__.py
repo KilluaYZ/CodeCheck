@@ -14,8 +14,7 @@ from codecheck.user import user
 # from codecheck.manage import project_manage
 from codecheck.file import fileManage
 from codecheck.container import ContainerManage
-test_cnt = 0
-
+from codecheck.project import projectManage
 # 创建flask app
 def create_app(test_config=None):
     # create and configure the app
@@ -37,12 +36,10 @@ def create_app(test_config=None):
 
     app.config.from_object(config)
 
-    # app.register_blueprint(monitor, url_prefix='/monitor')
     app.register_blueprint(user.bp)
     app.register_blueprint(fileManage.bp)
     app.register_blueprint(ContainerManage.bp)
-    # app.register_blueprint(project_manage.bp)
-    # app.register_blueprint(ai_chat.bp)
+    app.register_blueprint(projectManage.bp)
 
     # 配置定时任务
     # 该任务作用是每个一个小时检查一次user_token表，将超过1天未活动的token删掉（随便定的，后面改

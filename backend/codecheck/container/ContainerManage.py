@@ -22,7 +22,7 @@ def run_container():
         )
         user = check_user_before_request(request)
         dm = DockerManager()
-        dc = dm.run_container(name)
+        dc = dm.run_container(name, user['_id'])
         return build_success_response(dc.to_dict())
 
     except NetworkException as e:
@@ -56,7 +56,7 @@ def list_container():
     try:
         user = check_user_before_request(request)
         dm = DockerManager()
-        return build_success_response(dm.list_container())
+        return build_success_response(dm.list_container(user['_id']))
 
     except NetworkException as e:
         return build_error_response(code=e.code, msg=e.msg)

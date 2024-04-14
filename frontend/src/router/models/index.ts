@@ -8,10 +8,12 @@ import Other from "./other";
 import Elements from './element'
 import Project from './project'
 import Personal from './personal'
+import Container from './container'
 export {
 	System,
 	Other,
 	Elements,
 	Project,
-	Personal
+	Personal,
+	Container
 }

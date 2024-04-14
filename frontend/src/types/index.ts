@@ -21,3 +21,25 @@ export type UserAvatarList = {
 	userHistoryFileList: Array<string>,
 	systemAvatarList: Array<string>
 };
+
+export type ProjectType = {
+	_id: string,
+	name: string,
+	status: string,
+	create_time: string,
+	crash_num: number,
+	seed_num: number,
+	container_id: string,
+	user_id: string
+};
+
+export type ContainerType = {
+	_id: string,
+	name: string,
+	status: string,
+	create_time: string,
+	ssh_port: number,
+	ws_port: number,
+	container_id: string,
+	user_id: string
+};

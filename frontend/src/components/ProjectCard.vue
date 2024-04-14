@@ -5,25 +5,23 @@
                <el-col span=20>
                    <el-row align='middle'>
                        <span style='font-size: 24px;margin-right: 10px'>{{name}}</span>
-                       <el-tag v-if='stage==="created"' type='warning'>已创建</el-tag>
-                       <el-tag v-else-if='stage==="success"' type='success'>成功</el-tag>
-                       <el-tag v-else-if='stage==="unzipping"'>正在解压源码</el-tag>
-                       <el-tag v-else-if='stage==="analysing"' >正在分析源码</el-tag>
-                       <el-tag v-else-if='stage==="pulling"' >正在拉取源码</el-tag>
-                       <el-tag v-else-if='stage==="error"' type='danger' >失败</el-tag>
-                       <el-tag v-else-if='stage==="waiting"' type='info' >正在排队等待</el-tag>
-                       <el-tag v-else type='info'>状态未知</el-tag>
+                       <el-tag v-if='stage==="stop"' type='warning'>未运行</el-tag>
+                       <el-tag v-else-if='stage==="error"' type='danger' >出现错误</el-tag>
+                       <el-tag v-else-if='stage==="running"' type='info' >正在运行</el-tag>
+                       <el-tag v-else type='info'>未知状态</el-tag>
                    </el-row>
                </el-col>
                <el-col span=20>
-                   <el-button v-if='stage === "success"' type='success'  round @click='onClickEnterProjectBtn'>进入</el-button>
-                   <el-button v-else type='primary' round :icon='CaretRight' :disabled='submitBtnIsDisabled' @click='onClickSubmitProjectBtn'>分析</el-button>
+                   <el-button type='success'  round @click='onClickEnterProjectBtn'>进入</el-button>
                </el-col>
            </el-row>
         </template>
         <el-row style='width: 100%'>
-<!--            <div v-for="o in 4" :key="o" class="text item">{{ 'List item ' + o }}</div>-->
-            <el-statistic title="发现漏洞" :value="problemNum" />
+            <el-row style="flex-direction: column">
+                <el-statistic title="崩溃种子数" :value="crashNum" />
+                <el-statistic title="当前种子数" :value="seedNum" />
+                <el-statistic title="运行时间" :value="runTime" />
+            </el-row>
         </el-row>
         <el-divider />
         <el-row style='width: 100%;' justify='space-between' align='middle'>
@@ -36,16 +34,11 @@
                             <el-button size="small" type="primary" @click="deleteFunc(id);visible = false">确定</el-button>
                         </div>
                         <template #reference>
-<!--                            <el-button @click="visible = true" icon='DeleteFilled'></el-button>-->
                             <el-button @click='visible = true;' style='margin: 5px; margin-right: 10px;' circle :icon='Delete' type='danger'></el-button>
                         </template>
                     </el-popover>
                     <el-text>{{createTime}}</el-text>
                 </el-row>
-            </el-col>
-            <el-col span=20>
-                <el-tag v-if='isPublic' type='success'>公开</el-tag>
-                <el-tag v-else type='info'>私有</el-tag>
             </el-col>
         </el-row>
     </el-card>
@@ -53,7 +46,7 @@
 
 <script setup lang='ts'>
 import { ref, defineProps } from 'vue';
-import { delProject, submitProject } from '@/api/project'
+import { delProject } from '@/api/project'
 import { Delete, CaretRight } from '@element-plus/icons-vue'
 import router from '@/router'
 import { ElMessage } from 'element-plus'
@@ -62,7 +55,7 @@ const submitBtnIsDisabled = ref(false)
 const props = defineProps({
     id: {
       required: true,
-      type: Number
+      type: String
     },
     name: {
         required: true,
@@ -73,11 +66,6 @@ const props = defineProps({
         type: String,
         default: 'unknown'
     },
-    isPublic:{
-        required: false,
-        type: Boolean,
-        default: false
-    },
     createTime:{
         required: false,
         type: String,
@@ -87,12 +75,19 @@ const props = defineProps({
         required: true,
         type: Function
     },
-    problemNum:{
+    crashNum:{
         required: false,
         type: Number,
         default: 0
-    }
+    },
+    seedNum:{
+        required: false,
+        type: Number,
+        default: 0
+    },
 })
+
+const runTime = ref("")
 
 const onClickDeleteBtn = () => {
     let projectId = props.id;
@@ -105,22 +100,6 @@ const onClickEnterProjectBtn = () => {
         query: {projectId: props.id}
     });
     window.open(routeUrl.href, '_blank')
-}
-
-const onClickSubmitProjectBtn = () => {
-    let projectId = props.id;
-    submitProject(projectId).then(res => {
-        ElMessage({
-            type: "success",
-            message: "提交成功"
-        })
-    }).catch(() => {
-        ElMessage({
-            type: "error",
-            message: "提交失败"
-        })
-    })
-
 }
 
 </script>

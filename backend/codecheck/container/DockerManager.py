@@ -32,28 +32,33 @@ class DockerContainer:
     def get_client(self):
         if self.container_id is None:
             raise Exception('container_id is None')
-        if self.client is None:
-            self.client = docker.from_env().containers.get(self.container_id)
-        return self.client
+        # if self.client is None:
+        #     self.client = docker.from_env().containers.get(self.container_id)
+        # return self.client
+        return docker.from_env().containers.get(self.container_id)
 
     def start(self):
+        # with mongo.get_session() as session:
+        #     with session.start_transaction():
         client = self.get_client()
         if client.status != 'running':
             client.start()
             self.execute_async("nohup node /root/ws_server/index.js &")
             self.execute_async("service ssh start")
-        self.update_status()
 
     def execute_async(self, cmd):
         client = self.get_client()
         threading.Thread(target=exec_cmd_thread, args=(client,cmd)).start()
 
     def stop(self):
+        # with mongo.get_session() as session:
+        #     with session.start_transaction():
         client = self.get_client()
         client.stop()
-        self.update_status()
 
     def remove(self):
+        # with mongo.get_session() as session:
+        #     with session.start_transaction():
         client = self.get_client()
         client.remove()
         self.release_container()
@@ -68,20 +73,19 @@ class DockerContainer:
             raise Exception('ssh_host or ssh_port is None')
         return self.ssh_host, self.ssh_port
 
-    def update_status(self):
-        client = self.get_client()
-        self.status = client.status
-        mongo.update_one('Container', {"container_id": self.container_id}, {"$set": {"status": self.status}})
-
     # 删除容器占用的全部资源
-    def release_container(self):
+    def release_container(self, session=None):
         shutil.rmtree(self.share_dir)
-        mongo.delete_one('Container', {"container_id": self.container_id})
+        mongo.delete_one('Container', {"container_id": self.container_id}, session=session)
 
     def execute(self, command: str):
         if self.client is None:
             self.start()
         self.client.exec_run(command)
+
+    def get_status(self):
+        client = self.get_client()
+        return client.status
 
     def from_dict(self, data: dict):
         if 'ssh_host' in data:
@@ -138,7 +142,9 @@ class DockerManager:
         return container
 
     def run_container(self, name: str, user_id: ObjectId) -> DockerContainer:
-        # 先获取所有docker容器的端口占用情况
+        # with mongo.get_session() as session:
+        #     with session.start_transaction():
+                # 先获取所有docker容器的端口占用情况
         host_ports = self.get_available_ports()
         container = DockerContainer()
         container.from_dict(host_ports)
@@ -160,12 +166,15 @@ class DockerManager:
         )
         container.container_id = container_obj.id
         mongo.update_one("Container", {"_id": _id}, {"$set":{"container_id": container.container_id}})
-        container.update_status()
         container.start()
         return container
 
-    def list_container(self) -> list:
-        return list(mongo.find("Container"))
+    def list_container(self, user_id) -> list:
+        rows = list(mongo.find("Container", {'user_id': user_id}).sort("create_time", -1))
+        for i in range(len(rows)):
+            tc = self.get_container(rows[i]['container_id'])
+            rows[i]['status'] = tc.get_status()
+        return rows
 
     # 获取可用的ssh和ws的映射端口
     def get_available_ports(self) -> dict:

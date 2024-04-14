@@ -33,6 +33,7 @@ const allRoutes: any = ref([])
 onMounted(() => {
     const itemRoute: any = router.options.routes
     allRoutes.value = genMenuList(itemRoute)
+    console.log(allRoutes.value)
     // console.error('格式', allRoutes.value)
 })
 

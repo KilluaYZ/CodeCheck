@@ -58,7 +58,7 @@ def del_project():
 def list_project():
     try:
         user = check_user_before_request(request)
-        rows = mongo.find("Project", {"user_id": user['_id']})
+        rows = mongo.find("Project", {"user_id": user['_id']}).sort("create_time", -1)
         return build_success_response(list(rows))
 
     except NetworkException as e:

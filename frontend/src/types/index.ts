@@ -41,5 +41,7 @@ export type ContainerType = {
 	ssh_port: number,
 	ws_port: number,
 	container_id: string,
-	user_id: string
+	user_id: string,
+	ssh_host: string,
+	ws_host: string
 };

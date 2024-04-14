@@ -10,7 +10,7 @@ const Container: Array<RouteRecordRaw> = [
     {
         path: '/container',
         component: layout,
-        meta: { title: '容器', icon: 'MessageBox', activeMenu: true, orderNo: 1 },
+        meta: { title: '容器', icon: 'Monitor', activeMenu: true, orderNo: 1 },
         redirect: '/container/manage',
         children: [
             {

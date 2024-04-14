@@ -12,7 +12,7 @@
                    </el-row>
                </el-col>
                <el-col span=20>
-                   <el-button type='primary'  round @click='onClickEnterProjectBtn'>进入</el-button>
+                   <el-button type='primary' :disabled="stage !== 'running'" round @click='onClickEnterProjectBtn'>进入</el-button>
                    <el-button v-if="stage === 'running'" :icon="VideoPause" circle type="danger" @click="onClickStopContainer"></el-button>
                    <el-button v-else :icon="VideoPlay" circle type="success"  @click="onClickStartContainer"></el-button>
                </el-col>
@@ -98,7 +98,7 @@ const props = defineProps({
 const onClickEnterProjectBtn = () => {
     let routeUrl = router.resolve({
         path:"/container/detail",
-        query: {id: props.id}
+        query: {container_id: props.container_id}
     });
     window.open(routeUrl.href, '_blank')
 }

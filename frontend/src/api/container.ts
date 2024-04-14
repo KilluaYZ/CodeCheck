@@ -51,4 +51,13 @@ export function listContainer(){
 }
 
 
-
+export function getContainer(container_id: string){
+    const data = {
+        container_id: container_id
+    }
+    return request({
+        url: 'container/get',
+        method: 'post',
+        data: data
+    })
+}

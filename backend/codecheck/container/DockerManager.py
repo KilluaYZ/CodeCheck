@@ -122,7 +122,7 @@ class DockerContainer:
         }
 
 class DockerManager:
-    def __init__(self, host='127.0.0.1', share_dir=config.SHARE_DIR, container_img=config.DOCKER_IMAGE):
+    def __init__(self, host=config.API_HOST, share_dir=config.SHARE_DIR, container_img=config.DOCKER_IMAGE):
         self.host = host
         self.client = docker.from_env()
         self.share_dir = share_dir

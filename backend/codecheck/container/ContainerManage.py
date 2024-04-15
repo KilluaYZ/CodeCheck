@@ -101,3 +101,22 @@ def stop_container():
     except Exception as e:
         logger.logger.error(e)
         return build_error_response(code=500, msg='服务器内部错误')
+
+@bp.route('/get', methods=['POST'])
+def get_container():
+    try:
+        container_id = request.json.get('container_id')
+        checkFrontendArgsIsNotNone(
+            [{"key":"container_id","val":container_id}]
+        )
+        user = check_user_before_request(request)
+        row = mongo.find_one("Container", {"container_id": container_id, "user_id": user['_id']})
+        if row is None:
+            row = {}
+        return build_success_response(row)
+
+    except NetworkException as e:
+        return build_error_response(code=e.code, msg=e.msg)
+    except Exception as e:
+        logger.logger.error(e)
+        return build_error_response(code=500, msg='服务器内部错误')

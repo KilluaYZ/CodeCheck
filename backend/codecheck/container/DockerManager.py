@@ -43,8 +43,8 @@ class DockerContainer:
         client = self.get_client()
         if client.status != 'running':
             client.start()
-            self.execute_async("nohup node /root/ws_server/index.js &")
-            self.execute_async("service ssh start")
+        self.execute_async("nohup node /root/ws_server/index.js &")
+        self.execute_async("service ssh start")
 
     def execute_async(self, cmd):
         client = self.get_client()

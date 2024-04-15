@@ -20,7 +20,7 @@
             <el-row style="flex-direction: column">
                 <el-statistic title="崩溃种子数" :value="crashNum" />
                 <el-statistic title="当前种子数" :value="seedNum" />
-                <el-statistic title="运行时间" :value="runTime" />
+                <el-statistic v-if="stage === 'running'" title="运行时间" :value="runTime" />
             </el-row>
         </el-row>
         <el-divider />

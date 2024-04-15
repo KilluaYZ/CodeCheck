@@ -36,8 +36,22 @@
                 :model='form'
                 label-width='120px'
             >
-                <el-form-item label='项目名' prop='projectName'>
-                    <el-input v-model='form.projectName' placeholder='请输入项目名' clearable />
+                <el-form-item label='项目名' prop='name'>
+                    <el-input v-model='form.name' placeholder='请输入项目名' clearable />
+                </el-form-item>
+
+                <el-form-item label='容器' prop='container_id'>
+                    <el-select
+                        v-model="form.container_id"
+                        placeholder="请选择容器"
+                    >
+                        <el-option
+                            v-for="item in ContainerList"
+                            :key="item.container_id"
+                            :label="item.name"
+                            :value="item.container_id"
+                        />
+                    </el-select>
                 </el-form-item>
             </el-form>
 
@@ -58,24 +72,28 @@ import ProjectCard  from '@/components/ProjectCard.vue'
 import { ElLoading, ElMessage} from 'element-plus'
 import { types } from 'sass'
 import { addProject, delProject, getProjectList } from '@/api/project'
-import {ProjectType} from '@/types'
+import { ContainerType, ProjectType } from '@/types'
+import { listContainer } from '@/api/container'
 
 const dialogVisible = ref(false);
 
 const onClickAddProjectBtn = () => {
-    dialogVisible.value = true;
+    listContainer().then((res) => {
+        ContainerList.value = res.data;
+        dialogVisible.value = true;
+    })
 }
 
+const ContainerList = ref<ContainerType[]>()
+
 const form = ref({
-    projectName: "",
-    isPublic: false,
-    projectType: "other"
+    name: "",
+    container_id: ""
 })
 
 const resetForm = () => {
-    form.value.projectName = "";
-    form.value.isPublic = false;
-    form.value.projectType = "other"
+    form.value.name = ""
+    form.value.container_id = ""
 }
 
 
@@ -88,14 +106,22 @@ const onClickCancelBtn = () => {
 
 const onClickCommitBtn = () => {
     // 先检验一下
-    if(form.value.projectName === undefined || form.value.projectName.length === 0){
+    if(form.value.name === undefined || form.value.name.length === 0){
         ElMessage({
             type: 'error',
             message: '请填写项目名称'
         })
         return ;
     }
-
+    addProject(form.value.name, form.value.container_id)
+        .then((res) => {
+            ElMessage({
+                type: 'success',
+                message: res.msg
+            })
+            getList();
+            dialogVisible.value = false;
+        })
 }
 
 const getList = () => {

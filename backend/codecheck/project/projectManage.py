@@ -24,7 +24,7 @@ def add_project():
             ]
         )
         user = check_user_before_request(request)
-        row = mongo.insert_one('Project',{"name":name, "container_id":container_id, "user_id": user['_id'], "status": "stop","create_time": datetime.datetime.now()})
+        row = mongo.insert_one('Project',{"name":name, "container_id":container_id, "user_id": user['_id'], "status": "stop","create_time": datetime.datetime.now(), "last_start_time": datetime.datetime.now()})
         _id = row.inserted_id
         project = mongo.find_one('Project',{"_id": _id})
         return build_success_response(project)

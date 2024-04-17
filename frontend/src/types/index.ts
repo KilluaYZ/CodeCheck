@@ -30,7 +30,12 @@ export type ProjectType = {
 	crash_num: number,
 	seed_num: number,
 	container_id: string,
-	user_id: string
+	user_id: string,
+	binary_path: string,
+	binary_cov_path: string,
+	output_path: string,
+	input_path: string,
+	binary_args: string
 };
 
 export type ContainerType = {
@@ -81,4 +86,22 @@ export type FuzzStatType = {
 	stability: string,
 	trim: string,
 	cpu: string,
+};
+
+export type QueueEntryType = {
+	fname: string,
+	len: number,
+	cal_failed: number,
+	trim_done: number,
+	was_fuzzed: number,
+	passed_det: number,
+	has_new_cov: number,
+	favored: number,
+	fs_redundant: number,
+	exec_us: number,
+	handicap: number,
+	depth: number,
+	distance: number,
+	perf_score: number,
+	user_set_perf_score: number,
 };

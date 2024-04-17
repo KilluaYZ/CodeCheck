@@ -1,9 +1,9 @@
 <template>
     <el-row style="width: 100%; height: 100%">
-        <el-row style="width: 50%; height: 100%;padding: 15px 20px 15px 20px; background: #2c3e50; flex-direction: column;justify-content: space-between; align-items: center">
-            <el-row style="width: 100%; height: 80%;  background: #6e6775; border-radius: 10px;" class="card-eff">
+        <el-row style="width: 50%; height: 100%;padding: 15px 20px 15px 20px; flex-direction: column;justify-content: space-between; align-items: center">
+            <el-row style="width: 100%; height: 80%; border-radius: 10px;" class="card-eff">
                 <el-row style="width: 100%; height: 100%;flex-direction: column; justify-content: center; align-items: center; flex-wrap: nowrap; padding: 10px 20px 10px 20px">
-                    <el-row  style="width: 100%; background: #337ecc;">
+                    <el-row  style="width: 100%; " class="fuzz_stat_header">
                         <el-row style="width: 50%;">
                             <el-descriptions  title="process timing" :column="1" style="height: fit-content; width: 100%" size="small">
                                 <el-descriptions-item  label="run time">{{fuzz_stat.run_time}}</el-descriptions-item>
@@ -21,7 +21,7 @@
                             </el-descriptions>
                         </el-row>
                     </el-row>
-                    <el-row  style="width: 100%; background: #529b2e">
+                    <el-row  style="width: 100%; " class="fuzz_stat_header">
                         <el-row style="width: 50%">
                             <el-descriptions  title="cycle progress" :column="1" style="height: fit-content; width: 100%" size="small">
                                 <el-descriptions-item  label="now processing">{{fuzz_stat.now_processing}}</el-descriptions-item>
@@ -35,7 +35,7 @@
                             </el-descriptions>
                         </el-row>
                     </el-row>
-                    <el-row style="width: 100%; background: #c6e2ff">
+                    <el-row style="width: 100%; " class="fuzz_stat_header">
                         <el-row style="width: 50%">
                             <el-descriptions  title="stage progress" :column="1"  style="height: fit-content; width: 100%" size="small">
                                 <el-descriptions-item  label="now trying">{{fuzz_stat.now_trying}}</el-descriptions-item>
@@ -53,7 +53,7 @@
                             </el-descriptions>
                         </el-row>
                     </el-row>
-                    <el-row style="width: 100%; background: #d27373">
+                    <el-row style="width: 100%; " class="fuzz_stat_header">
                         <el-row style="width: 50%;">
                             <el-descriptions  title="fuzzing strategy yields" :column="1" style="height: fit-content; width: 100%" size="small">
                                 <el-descriptions-item  label="bit flips">{{fuzz_stat.bit_flips}}</el-descriptions-item>
@@ -79,105 +79,393 @@
                     </el-row>
                 </el-row>
             </el-row>
-            <el-row style="width: 100%; height: 18%;  background: #6e6775; border-radius: 10px;" class="card-eff">
+            <el-row style="width: 100%; height: 18%;  border-radius: 10px;" class="card-eff">
                 <el-row style="width: 100%; height: 100%;">
-                    <el-row style="width: 100%; height: 100%; justify-content: space-evenly; align-items: center;">
+                    <el-row style="width: 100%; height: 100%; flex-direction: column; justify-content: space-evenly; align-items: center;">
                         <el-row style="">
-                            <el-button type="success" size="large"><el-icon><VideoPlay /></el-icon>开始Fuzz</el-button>
-                            <el-button type="danger" size="large"><el-icon><VideoPause /></el-icon>停止Fuzz</el-button>
-                            <el-button type="warning" size="large"><el-icon><DArrowRight /></el-icon>跳过当前种子</el-button>
-                            <el-button type="info" size="large"><el-icon><Setting /></el-icon>设置</el-button>
+                            <el-button type="success" size="large" plain @click="resume_fuzz"><el-icon><VideoPlay /></el-icon>恢复Fuzz</el-button>
+                            <el-button type="danger" size="large" plain @click="pause_fuzz"><el-icon><VideoPause /></el-icon>暂停Fuzz</el-button>
+                            <el-button type="warning" size="large" plain><el-icon><DArrowRight /></el-icon>跳过当前种子</el-button>
+                        </el-row>
+                        <el-row>
+                            <el-button type="success" size="large" @click="onClickStartFuzzerBtn"><el-icon><VideoPlay /></el-icon>开启Fuzzer</el-button>
+                            <el-button type="danger" size="large"><el-icon><VideoPause /></el-icon>停止Fuzzer</el-button>
+                            <el-button type="info" size="large" @click="onClickConfigProjectBtn"><el-icon><Setting /></el-icon>配置Fuzzer</el-button>
                         </el-row>
                     </el-row>
                 </el-row>
             </el-row>
         </el-row>
-        <el-row style="width: 50%; height: 100%; padding: 15px 20px 15px 20px; background: #74ebd5; flex-direction: column; justify-content: space-between; align-items: center">
-            <el-row style="width: 100%; height: 28%;  background: #6e6775; border-radius: 10px;" class="card-eff">
-                <el-row style="width: 100%;height: 100%;flex-direction: column;justify-content: start; align-items: center">
-                    <el-row style="width: 100%; height: 10%; justify-content: end;padding: 10px 10px 0 0">
-                        <el-button type="primary" ><el-icon><Refresh /></el-icon>刷新</el-button>
+        <el-row style="width: 50%; height: 100%; padding: 15px 20px 15px 20px; flex-direction: column; justify-content: space-between; align-items: center">
+            <el-row style="width: 100%; height: 28%; border-radius: 10px;" class="card-eff">
+                <el-row style="width: 100%;height: 100%;flex-direction: column;justify-content: start; align-items: center; padding: 10px 20px 10px 20px">
+                    <el-row style="width: 100%; height: 10%; justify-content: end;">
+                        <el-button type="primary" @click="get_queue_cur_info" ><el-icon><Refresh /></el-icon>刷新</el-button>
                     </el-row>
                     <el-row style="width: 100%; height: 90%">
-
+                        <el-descriptions title="当前种子信息" style="height: fit-content; width: 100%" size="small">
+                            <el-descriptions-item  label="fname">{{queue_cur.fname}}</el-descriptions-item>
+                            <el-descriptions-item  label="cal_failed">{{queue_cur.cal_failed}}</el-descriptions-item>
+                            <el-descriptions-item  label="trim_done">{{queue_cur.trim_done}}</el-descriptions-item>
+                            <el-descriptions-item  label="was_fuzzed">{{queue_cur.was_fuzzed}}</el-descriptions-item>
+                            <el-descriptions-item  label="passed_det">{{queue_cur.passed_det}}</el-descriptions-item>
+                            <el-descriptions-item  label="has_new_cov">{{queue_cur.has_new_cov}}</el-descriptions-item>
+                            <el-descriptions-item  label="favored">{{queue_cur.favored}}</el-descriptions-item>
+                            <el-descriptions-item  label="fs_redundant">{{queue_cur.fs_redundant}}</el-descriptions-item>
+                            <el-descriptions-item  label="exec_us">{{queue_cur.exec_us}}</el-descriptions-item>
+                            <el-descriptions-item  label="handicap">{{queue_cur.handicap}}</el-descriptions-item>
+                            <el-descriptions-item  label="depth">{{queue_cur.depth}}</el-descriptions-item>
+                            <el-descriptions-item  label="distance">{{queue_cur.distance}}</el-descriptions-item>
+                            <el-descriptions-item  label="perf_score">{{queue_cur.perf_score}}</el-descriptions-item>
+                            <el-descriptions-item  label="user_set_perf_score">{{queue_cur.user_set_perf_score}}</el-descriptions-item>
+                        </el-descriptions>
                     </el-row>
                 </el-row>
             </el-row>
-            <el-row style="width: 100%; height: 70%;  background: #6e6775; border-radius: 10px;" class="card-eff">
+            <el-row style="width: 100%; height: 70%;   border-radius: 10px;" class="card-eff">
                 <el-row style="width: 100%;height: 100%;flex-direction: column;justify-content: start; align-items: center">
                     <el-row style="width: 100%; height: 10%; justify-content: end;padding: 10px 10px 0 0">
-                        <el-button type="primary" ><el-icon><Refresh /></el-icon>刷新</el-button>
+                        <el-button type="primary" @click="get_queue_info"><el-icon><Refresh /></el-icon>刷新</el-button>
                     </el-row>
-                    <el-row style="width: 100%; height: 90%">
-
+                    <el-row style="width: 100%; height: 90%; padding: 10px 20px 10px 20px">
+                        <el-table
+                            :data="queue_table_data"
+                            style="width: 100%; height: 100%"
+                            border
+                            strip
+                        >
+                            <el-table-column min-width="450" prop="fname" label="fname"/>
+                            <el-table-column min-width="60" prop="len" label="len"/>
+                            <el-table-column min-width="100" prop="cal_failed" label="cal_failed"/>
+                            <el-table-column min-width="100" prop="trim_done" label="trim_done"/>
+                            <el-table-column min-width="120" prop="was_fuzzed" label="was_fuzzed"/>
+                            <el-table-column min-width="120" prop="passed_det" label="passed_det"/>
+                            <el-table-column min-width="150" prop="has_new_cov" label="has_new_cov"/>
+                            <el-table-column min-width="100" prop="favored" label="favored"/>
+                            <el-table-column min-width="120" prop="fs_redundant" label="fs_redundant"/>
+                            <el-table-column min-width="100" prop="exec_us" label="exec_us"/>
+                            <el-table-column min-width="100" prop="handicap" label="handicap"/>
+                            <el-table-column min-width="100" prop="depth" label="depth"/>
+                            <el-table-column min-width="200" prop="distance" label="distance"/>
+                            <el-table-column min-width="100" prop="perf_score" label="perf_score"/>
+                            <el-table-column min-width="180" prop="user_set_perf_score" label="user_set_perf_score"/>
+                            <el-table-column fixed="right" label="Operation" width="120">
+                                <template #default="scope">
+                                    <el-button
+                                        link
+                                        type="primary"
+                                        size="small"
+                                        @click.prevent="">
+                                        修改
+                                    </el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
                     </el-row>
                 </el-row>
             </el-row>
         </el-row>
     </el-row>
+
+    <el-dialog
+        v-model='configFuzzerDialogVisible'
+        title='配置Fuzzer'
+        width='40%'>
+
+        <el-row style='width: 100%'>
+            <el-form
+                :model='configForm'
+                label-width='200px'
+            >
+                <el-form-item label='fuzzer初始种子目录绝对路径' prop='input_path'>
+                    <el-input v-model='configForm!.input_path' placeholder='/share/in' clearable />
+                </el-form-item>
+
+                <el-form-item label='fuzzer输出目录绝对路径' prop='output_path'>
+                    <el-input v-model='configForm!.output_path' placeholder='/share/out' clearable />
+                </el-form-item>
+
+                <el-form-item label='待测试的二进制绝对路径' prop='binary_path'>
+                    <el-input v-model='configForm!.binary_path' placeholder='/share/xmllint' clearable />
+                </el-form-item>
+
+                <el-form-item label='覆盖率插桩的二进制绝对路径' prop='binary_cov_path'>
+                    <el-input v-model='configForm!.binary_cov_path' placeholder='/share/xmllint-cov' clearable />
+                </el-form-item>
+
+                <el-form-item label='待测程序命令行参数' prop='binary_args'>
+                    <el-input v-model='configForm!.binary_args' placeholder='--valid @@' clearable />
+                </el-form-item>
+            </el-form>
+
+        </el-row>
+
+        <template #footer>
+          <span class="dialog-footer">
+            <el-button @click="ConfigOnClickCancelBtn">取消</el-button>
+            <el-button type="primary" @click="ConfigOnClickCommitBtn">确认</el-button>
+          </span>
+        </template>
+    </el-dialog>
+
 </template>
 
 <script setup lang="ts">
 
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { FuzzStatType, ProjectType } from '@/types'
-import { getProjectDetail } from '@/api/project'
+import { FuzzStatType, ProjectType, QueueEntryType } from '@/types'
+import { getProjectDetail, configProject, fuzz_start_fuzzer, fuzz_write_by_id, fuzz_write_cur, fuzz_read_cur, fuzz_read_stat, fuzz_read_queue, fuzz_add_fuzzer, fuzz_resume_fuzzer, fuzz_pause_fuzzer } from '@/api/project'
 import { DArrowRight, Refresh, Setting, VideoPause, VideoPlay } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
 
 const router = useRouter();
 const route  = useRoute();
 const projectId = route.query.projectId as string
 const project_info = ref<ProjectType>();
 const fuzz_stat = ref<FuzzStatType>({
-    run_time: "0 days, 9 hrs, 47 min, 43 sec",
-    last_new_path: "0 days, 0 hrs, 47 min, 31 sec",
-    last_uniq_crash: "0 days, 3 hrs, 39 min, 58 sec",
-    last_uniq_hang: "none seen yet",
-    cycles_done: "97",
-    total_path: "101",
-    uniq_crashes: "8",
-    uniq_hangs: "0",
-    now_processing: "71* (70.30%)",
-    paths_timed_out: "0 (0.00%)",
-    map_density: "0.29% / 0.36%",
-    count_coverage: "3.65 bits/tuple",
-    now_trying: "splice 1",
-    stage_execs: "66/240 (27.50%)",
-    total_execs: "5.79M",
-    exec_speed: "115.3/sec",
-    favored_paths: "10 (9.90%)",
-    new_edges_on: "16 (15.84%)",
-    total_crashes: "4567 (8 unique)",
-    total_tmouts: "3177 (15 unique)",
-    bit_flips: "n/a, n/a, n/a",
-    byte_flips: "n/a, n/a, n/a",
-    arithmetics: "n/a, n/a, n/a",
-    known_inis: "n/a, n/a, n/a",
-    dictionary: "n/a, n/a, n/a",
-    havoc: "55/2.08M, 53/3.68M",
-    trim: "28.22%/41.9k, n/a",
-    levels: "24",
-    pending: "0",
-    pend_fav: "0",
-    own_finds: "100",
-    imported: "n/a",
-    stability: "100.00%",
-    cpu: "cpu: 20%"
+    run_time: "",
+    last_new_path: "",
+    last_uniq_crash: "",
+    last_uniq_hang: "",
+    cycles_done: "",
+    total_path: "",
+    uniq_crashes: "",
+    uniq_hangs: "",
+    now_processing: "",
+    paths_timed_out: "",
+    map_density: "",
+    count_coverage: "",
+    now_trying: "",
+    stage_execs: "",
+    total_execs: "",
+    exec_speed: "",
+    favored_paths: "",
+    new_edges_on: "",
+    total_crashes: "",
+    total_tmouts: "",
+    bit_flips: "",
+    byte_flips: "",
+    arithmetics: "",
+    known_inis: "",
+    dictionary: "",
+    havoc: "",
+    trim: "",
+    levels: "",
+    pending: "",
+    pend_fav: "",
+    own_finds: "",
+    imported: "",
+    stability: "",
+    cpu: ""
 });
+
+const queue_cur = ref<QueueEntryType>({
+    fname: "",
+    len: 0,
+    cal_failed: 0,
+    trim_done: 0,
+    was_fuzzed: 0,
+    passed_det: 0,
+    has_new_cov: 0,
+    favored: 0,
+    fs_redundant: 0,
+    exec_us: 0,
+    handicap: 0,
+    depth: 0,
+    distance: 0,
+    perf_score: 0,
+    user_set_perf_score: 0,
+});
+
+const queue_table_data = ref<QueueEntryType[]>([])
+
+const configFuzzerDialogVisible = ref(false)
+const configForm = ref<ProjectType>({
+    _id: '',
+    name: '',
+    status: '',
+    create_time: '',
+    crash_num: 0,
+    seed_num: 0,
+    container_id: '',
+    user_id: '',
+    binary_path: '',
+    binary_cov_path: '',
+    output_path: '',
+    input_path: '',
+    binary_args: ''
+})
+
+const resetForm = () => {
+    configForm.value!.binary_path = "";
+    configForm.value!.binary_cov_path = "";
+    configForm.value!.output_path = "";
+    configForm.value!.input_path = "";
+    configForm.value!.binary_args = "";
+}
+
 const get_project_info = () => {
-    getProjectDetail(projectId)
+    return getProjectDetail(projectId)
         .then(res => {
             project_info.value = res.data;
         })
 }
 
+const get_fuzz_stat = () => {
+    fuzz_read_stat(projectId)
+        .then(res => {
+            fuzz_stat.value = res.data;
+        })
+}
+
+const resume_fuzz = () => {
+    fuzz_resume_fuzzer(projectId)
+        .then((res) => {
+            ElMessage({
+                type: "success",
+                message: res.msg
+            })
+        })
+}
+
+const pause_fuzz = () => {
+    fuzz_pause_fuzzer(projectId)
+        .then((res) => {
+            ElMessage({
+                type: "success",
+                message: res.msg
+            })
+        })
+}
+
+const get_queue_cur_info = () => {
+    fuzz_read_cur(projectId)
+        .then(res => {
+            queue_cur.value = res.data;
+        })
+}
+
+const get_queue_info = () => {
+    fuzz_read_queue(projectId)
+        .then(res => {
+            queue_table_data.value = res.data;
+        })
+}
+
+const ConfigOnClickCommitBtn = () => {
+    if(
+        configForm.value?.binary_path == null || configForm.value?.binary_path.length <= 0
+        || configForm.value?.output_path == null || configForm.value?.output_path.length <= 0
+        || configForm.value?.binary_cov_path == null || configForm.value?.binary_cov_path.length <= 0
+        || configForm.value?.input_path == null || configForm.value?.input_path.length <= 0
+        || configForm.value?.binary_args == null || configForm.value?.binary_args.length <= 0
+    ){
+        ElMessage({
+            type: 'error',
+            message: "请将信息填写完整！"
+        })
+        return;
+    }
+    configProject(projectId, configForm.value!)
+        .then(res => {
+            ElMessage({
+                type: "success",
+                message: res.msg
+            })
+            configFuzzerDialogVisible.value = false;
+            resetForm();
+        })
+}
+
+const ConfigOnClickCancelBtn = () => {
+    resetForm();
+    configFuzzerDialogVisible.value = false;
+}
+
+const onClickConfigProjectBtn = () => {
+    get_project_info().then(() => {
+        configForm.value!.binary_path = project_info.value!.binary_path;
+        configForm.value!.binary_cov_path = project_info.value!.binary_cov_path;
+        configForm.value!.output_path = project_info.value!.output_path;
+        configForm.value!.input_path = project_info.value!.input_path;
+        configForm.value!.binary_args = project_info.value!.binary_args;
+        configFuzzerDialogVisible.value = true;
+    })
+}
+
+
+const onClickStartFuzzerBtn= () => {
+    fuzz_start_fuzzer(projectId)
+        .then(res => {
+            setTimeout(() => {
+                fuzz_add_fuzzer(projectId).then(res => {
+                    ElMessage({
+                        type: "success",
+                        message: res.msg
+                    })
+                    start_interval()
+                })
+            }, 3000)
+        })
+}
+
+const start_interval = () => {
+    setInterval(get_fuzz_stat, 1000)
+}
+
 onMounted(get_project_info)
 
+
+// {
+//     run_time: "0 days, 9 hrs, 47 min, 43 sec",
+//     last_new_path: "0 days, 0 hrs, 47 min, 31 sec",
+//     last_uniq_crash: "0 days, 3 hrs, 39 min, 58 sec",
+//     last_uniq_hang: "none seen yet",
+//     cycles_done: "97",
+//     total_path: "101",
+//     uniq_crashes: "8",
+//     uniq_hangs: "0",
+//     now_processing: "71* (70.30%)",
+//     paths_timed_out: "0 (0.00%)",
+//     map_density: "0.29% / 0.36%",
+//     count_coverage: "3.65 bits/tuple",
+//     now_trying: "splice 1",
+//     stage_execs: "66/240 (27.50%)",
+//     total_execs: "5.79M",
+//     exec_speed: "115.3/sec",
+//     favored_paths: "10 (9.90%)",
+//     new_edges_on: "16 (15.84%)",
+//     total_crashes: "4567 (8 unique)",
+//     total_tmouts: "3177 (15 unique)",
+//     bit_flips: "n/a, n/a, n/a",
+//     byte_flips: "n/a, n/a, n/a",
+//     arithmetics: "n/a, n/a, n/a",
+//     known_inis: "n/a, n/a, n/a",
+//     dictionary: "n/a, n/a, n/a",
+//     havoc: "55/2.08M, 53/3.68M",
+//     trim: "28.22%/41.9k, n/a",
+//     levels: "24",
+//     pending: "0",
+//     pend_fav: "0",
+//     own_finds: "100",
+//     imported: "n/a",
+//     stability: "100.00%",
+//     cpu: "cpu: 20%"
+// }
 </script>
 
 <style>
 .card-eff{
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19)
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+    background: #ffffff;
+}
+
+.el-descriptions--small .el-descriptions__body .el-descriptions__table:not(.is-bordered) .el-descriptions__cell{
+    padding: 0;
+}
+
+.fuzz_stat_header{
+    background: #dbdbdb;
 }
 </style>

@@ -79,7 +79,12 @@ const dialogVisible = ref(false);
 
 const onClickAddProjectBtn = () => {
     listContainer().then((res) => {
-        ContainerList.value = res.data;
+        ContainerList.value = Array();
+        res.data.forEach((item:ContainerType) => {
+            if(item.status === 'running'){
+                ContainerList.value!.push(item)
+            }
+        })
         dialogVisible.value = true;
     })
 }
@@ -102,6 +107,7 @@ const data = ref<ProjectType[]>([])
 
 const onClickCancelBtn = () => {
     resetForm();
+    dialogVisible.value = false;
 }
 
 const onClickCommitBtn = () => {

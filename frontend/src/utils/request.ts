@@ -19,7 +19,6 @@ const service = axios.create({
 
 // request拦截器
 service.interceptors.request.use(config => {
-    console.log("request拦截器")
     // 是否需要设置 token
     const isToken = (config.headers || {}).isToken === false
     // 是否需要防止数据重复提交
@@ -70,10 +69,8 @@ service.interceptors.request.use(config => {
 
 // 响应拦截器
 service.interceptors.response.use(res => {
-        console.log("拦截器捕捉")
         // 未设置状态码则默认成功状态
         const code = res.data.code || 200;
-        console.log(res)
         // 获取错误信息
         // @ts-ignore
         const msg = res.data.msg || errorCode[code] || errorCode['default']

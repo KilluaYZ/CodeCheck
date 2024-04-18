@@ -83,14 +83,14 @@
                 <el-row style="width: 100%; height: 100%;">
                     <el-row style="width: 100%; height: 100%; flex-direction: column; justify-content: space-evenly; align-items: center;">
                         <el-row style="">
-                            <el-button type="success" size="large" plain @click="resume_fuzz"><el-icon><VideoPlay /></el-icon>恢复Fuzz</el-button>
-                            <el-button type="danger" size="large" plain @click="pause_fuzz"><el-icon><VideoPause /></el-icon>暂停Fuzz</el-button>
-                            <el-button type="warning" size="large" plain><el-icon><DArrowRight /></el-icon>跳过当前种子</el-button>
+                            <el-button :disabled="project_info.status != 'running'" type="success" size="large" plain @click="resume_fuzz"><el-icon><VideoPlay /></el-icon>恢复Fuzz</el-button>
+                            <el-button :disabled="project_info.status != 'running'" type="danger" size="large" plain @click="pause_fuzz"><el-icon><VideoPause /></el-icon>暂停Fuzz</el-button>
+                            <el-button :disabled="project_info.status != 'running'" type="warning" size="large" plain @click="onClickSkipCurCaseBtn"><el-icon><DArrowRight /></el-icon>跳过当前种子</el-button>
                         </el-row>
                         <el-row>
-                            <el-button type="success" size="large" @click="onClickStartFuzzerBtn"><el-icon><VideoPlay /></el-icon>开启Fuzzer</el-button>
-                            <el-button type="danger" size="large"><el-icon><VideoPause /></el-icon>停止Fuzzer</el-button>
-                            <el-button type="info" size="large" @click="onClickConfigProjectBtn"><el-icon><Setting /></el-icon>配置Fuzzer</el-button>
+                            <el-button :disabled="project_info.status == 'running'" type="success" size="large" @click="onClickStartFuzzerBtn"><el-icon><VideoPlay /></el-icon>启动Fuzz</el-button>
+                            <el-button :disabled="project_info.status != 'running'" type="danger" size="large" @click="onClickStopFuzzerBtn"><el-icon><VideoPause /></el-icon>停止Fuzz</el-button>
+                            <el-button :disabled="project_info.status == 'running'" type="info" size="large" @click="onClickConfigProjectBtn"><el-icon><Setting /></el-icon>配置Fuzz</el-button>
                         </el-row>
                     </el-row>
                 </el-row>
@@ -100,7 +100,8 @@
             <el-row style="width: 100%; height: 28%; border-radius: 10px;" class="card-eff">
                 <el-row style="width: 100%;height: 100%;flex-direction: column;justify-content: start; align-items: center; padding: 10px 20px 10px 20px">
                     <el-row style="width: 100%; height: 10%; justify-content: end;">
-                        <el-button type="primary" @click="get_queue_cur_info" ><el-icon><Refresh /></el-icon>刷新</el-button>
+                        <el-button  type="success" size="small" @click="onClickEditQueueCurBtn" ><el-icon><EditPen /></el-icon>修改</el-button>
+                        <el-button  type="primary" size="small" @click="get_queue_cur_info" ><el-icon><Refresh /></el-icon>刷新</el-button>
                     </el-row>
                     <el-row style="width: 100%; height: 90%">
                         <el-descriptions title="当前种子信息" style="height: fit-content; width: 100%" size="small">
@@ -125,7 +126,7 @@
             <el-row style="width: 100%; height: 70%;   border-radius: 10px;" class="card-eff">
                 <el-row style="width: 100%;height: 100%;flex-direction: column;justify-content: start; align-items: center">
                     <el-row style="width: 100%; height: 10%; justify-content: end;padding: 10px 10px 0 0">
-                        <el-button type="primary" @click="get_queue_info"><el-icon><Refresh /></el-icon>刷新</el-button>
+                        <el-button size="small" type="primary" @click="get_queue_info"><el-icon><Refresh /></el-icon>刷新</el-button>
                     </el-row>
                     <el-row style="width: 100%; height: 90%; padding: 10px 20px 10px 20px">
                         <el-table
@@ -135,27 +136,27 @@
                             strip
                         >
                             <el-table-column min-width="450" prop="fname" label="fname"/>
+                            <el-table-column min-width="100" prop="favored" label="favored"/>
+                            <el-table-column min-width="120" prop="was_fuzzed" label="was_fuzzed"/>
+                            <el-table-column min-width="200" prop="distance" label="distance"/>
+                            <el-table-column min-width="100" prop="perf_score" label="perf_score"/>
+                            <el-table-column min-width="180" prop="user_set_perf_score" label="user_set_perf_score"/>
                             <el-table-column min-width="60" prop="len" label="len"/>
                             <el-table-column min-width="100" prop="cal_failed" label="cal_failed"/>
                             <el-table-column min-width="100" prop="trim_done" label="trim_done"/>
-                            <el-table-column min-width="120" prop="was_fuzzed" label="was_fuzzed"/>
                             <el-table-column min-width="120" prop="passed_det" label="passed_det"/>
                             <el-table-column min-width="150" prop="has_new_cov" label="has_new_cov"/>
-                            <el-table-column min-width="100" prop="favored" label="favored"/>
                             <el-table-column min-width="120" prop="fs_redundant" label="fs_redundant"/>
                             <el-table-column min-width="100" prop="exec_us" label="exec_us"/>
                             <el-table-column min-width="100" prop="handicap" label="handicap"/>
                             <el-table-column min-width="100" prop="depth" label="depth"/>
-                            <el-table-column min-width="200" prop="distance" label="distance"/>
-                            <el-table-column min-width="100" prop="perf_score" label="perf_score"/>
-                            <el-table-column min-width="180" prop="user_set_perf_score" label="user_set_perf_score"/>
                             <el-table-column fixed="right" label="Operation" width="120">
                                 <template #default="scope">
                                     <el-button
                                         link
                                         type="primary"
                                         size="small"
-                                        @click.prevent="">
+                                        @click.prevent="onClickEditQueueEntryBtn(scope.$index, scope.row)">
                                         修改
                                     </el-button>
                                 </template>
@@ -208,6 +209,48 @@
         </template>
     </el-dialog>
 
+    <el-dialog
+        v-model='EditQueueEntryDialogVisible'
+        title='设置种子属性'
+        width='40%'>
+
+        <el-row style='width: 100%'>
+            <el-form
+                style="width: 100%"
+                :model='queueEditForm'
+                label-width='140px'
+            >
+                <el-form-item label='种子名' prop='fname'>
+                    <el-input disabled v-model='queueEditForm.fname' />
+                </el-form-item>
+
+                <el-form-item label='是否感兴趣' prop='favored'>
+                    <el-switch v-model='queueEditForm.favored' inline-prompt active-text="是" inactive-text="否" :active-value="1" :inactive-value="0" />
+                </el-form-item>
+
+                <el-form-item label='是否已经被fuzz' prop='was_fuzzed'>
+                    <el-switch v-model='queueEditForm.was_fuzzed' inline-prompt active-text="是" inactive-text="否" :active-value="1" :inactive-value="0" />
+                </el-form-item>
+
+                <el-form-item label='种子目标距离' prop='distance'>
+                    <el-input-number v-model='queueEditForm.distance' :precision="2" :step="0.01"/>
+                </el-form-item>
+
+                <el-form-item label='用户设定种子分数' prop='distance'>
+                    <el-input-number  v-model='queueEditForm.user_set_perf_score' />
+                </el-form-item>
+            </el-form>
+
+        </el-row>
+
+        <template #footer>
+          <span class="dialog-footer">
+            <el-button @click="EditOnClickCancelBtn">取消</el-button>
+            <el-button type="primary" @click="EditOnClickCommitBtn">确认</el-button>
+          </span>
+        </template>
+    </el-dialog>
+
 </template>
 
 <script setup lang="ts">
@@ -215,14 +258,28 @@
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { FuzzStatType, ProjectType, QueueEntryType } from '@/types'
-import { getProjectDetail, configProject, fuzz_start_fuzzer, fuzz_write_by_id, fuzz_write_cur, fuzz_read_cur, fuzz_read_stat, fuzz_read_queue, fuzz_add_fuzzer, fuzz_resume_fuzzer, fuzz_pause_fuzzer } from '@/api/project'
-import { DArrowRight, Refresh, Setting, VideoPause, VideoPlay } from '@element-plus/icons-vue'
+import { getProjectDetail, configProject, fuzz_start_fuzzer, fuzz_write_by_id, fuzz_write_cur, fuzz_read_cur, fuzz_read_stat, fuzz_read_queue, fuzz_add_fuzzer, fuzz_resume_fuzzer, fuzz_pause_fuzzer, fuzz_stop_fuzzer, fuzz_skip_cur_case } from '@/api/project'
+import { DArrowRight, EditPen, Refresh, Setting, VideoPause, VideoPlay } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 
 const router = useRouter();
 const route  = useRoute();
 const projectId = route.query.projectId as string
-const project_info = ref<ProjectType>();
+const project_info = ref<ProjectType>({
+    _id: '',
+    name: '',
+    status: '',
+    create_time: '',
+    crash_num: 0,
+    seed_num: 0,
+    container_id: '',
+    user_id: '',
+    binary_path: '',
+    binary_cov_path: '',
+    output_path: '',
+    input_path: '',
+    binary_args: ''
+});
 const fuzz_stat = ref<FuzzStatType>({
     run_time: "",
     last_new_path: "",
@@ -297,12 +354,38 @@ const configForm = ref<ProjectType>({
     binary_args: ''
 })
 
+const queueEditForm = ref<QueueEntryType>({
+    fname: '',
+    len: 0,
+    cal_failed: 0,
+    trim_done: 0,
+    was_fuzzed: 0,
+    passed_det: 0,
+    has_new_cov: 0,
+    favored: 0,
+    fs_redundant: 0,
+    exec_us: 0,
+    handicap: 0,
+    depth: 0,
+    distance: 0,
+    perf_score: 0,
+    user_set_perf_score: 0
+})
+
+const EditQueueEntryDialogVisible = ref(false)
+const isEditQueueCur = ref(false)
+
 const resetForm = () => {
     configForm.value!.binary_path = "";
     configForm.value!.binary_cov_path = "";
     configForm.value!.output_path = "";
     configForm.value!.input_path = "";
     configForm.value!.binary_args = "";
+
+    queueEditForm.value.was_fuzzed = 0;
+    queueEditForm.value.favored = 0;
+    queueEditForm.value.distance = 0;
+    queueEditForm.value.user_set_perf_score = 0;
 }
 
 const get_project_info = () => {
@@ -405,6 +488,7 @@ const onClickStartFuzzerBtn= () => {
                         message: res.msg
                     })
                     start_interval()
+                    project_info.value.status = 'running'
                 })
             }, 3000)
         })
@@ -414,8 +498,98 @@ const start_interval = () => {
     setInterval(get_fuzz_stat, 1000)
 }
 
-onMounted(get_project_info)
+onMounted(() =>  {
+    get_project_info().then(() => {
+        if(project_info.value.status === 'running'){
+            fuzz_add_fuzzer(projectId).then(res => {
+                ElMessage({
+                    type: "success",
+                    message: res.msg
+                })
+                start_interval()
 
+                get_queue_cur_info()
+                get_queue_info()
+            })
+        }
+    })
+})
+
+const modify_queue_entry_idx = ref(0);
+
+
+const onClickEditQueueEntryBtn = (idx: number, queue_entry: QueueEntryType) => {
+    queueEditForm.value.fname = queue_entry.fname;
+    queueEditForm.value.distance = queue_entry.distance;
+    queueEditForm.value.was_fuzzed = queue_entry.was_fuzzed;
+    queueEditForm.value.favored = queue_entry.favored;
+    queueEditForm.value.user_set_perf_score = queue_entry.user_set_perf_score;
+    isEditQueueCur.value = false;
+    EditQueueEntryDialogVisible.value = true;
+    modify_queue_entry_idx.value = idx;
+}
+
+const onClickEditQueueCurBtn = () => {
+    queueEditForm.value.fname = queue_cur.value.fname;
+    queueEditForm.value.distance = queue_cur.value.distance;
+    queueEditForm.value.was_fuzzed = queue_cur.value.was_fuzzed;
+    queueEditForm.value.favored = queue_cur.value.favored;
+    queueEditForm.value.user_set_perf_score = queue_cur.value.user_set_perf_score;
+    isEditQueueCur.value = true;
+    EditQueueEntryDialogVisible.value = true;
+}
+
+
+const EditOnClickCancelBtn = () => {
+    resetForm();
+    EditQueueEntryDialogVisible.value = false;
+}
+
+
+const EditOnClickCommitBtn = () => {
+    if(isEditQueueCur.value){
+        fuzz_write_cur(projectId, queueEditForm.value)
+            .then(res => {
+                ElMessage({
+                    type: "success",
+                    message: res.msg
+                })
+                get_queue_cur_info();
+                EditQueueEntryDialogVisible.value  = false;
+            })
+    }else{
+        fuzz_write_by_id(projectId, modify_queue_entry_idx.value, queueEditForm.value)
+            .then(res => {
+                ElMessage({
+                    type: "success",
+                    message: res.msg
+                })
+                get_queue_info();
+                EditQueueEntryDialogVisible.value  = false;
+            })
+    }
+}
+
+const onClickStopFuzzerBtn = () =>{
+    fuzz_stop_fuzzer(projectId)
+        .then(res => {
+            ElMessage({
+                type: "success",
+                message: res.msg
+            })
+            get_project_info()
+        })
+}
+
+const onClickSkipCurCaseBtn = () =>{
+    fuzz_skip_cur_case(projectId)
+        .then(res => {
+            ElMessage({
+                type: "success",
+                message: res.msg
+            })
+        })
+}
 
 // {
 //     run_time: "0 days, 9 hrs, 47 min, 43 sec",

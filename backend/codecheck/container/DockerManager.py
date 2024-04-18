@@ -13,7 +13,9 @@ mongo = Mongo()
 
 
 def exec_cmd_thread(client, cmd):
-    client.exec_run(cmd)
+    print(f"executing {cmd}")
+    res = client.exec_run(cmd)
+    print(res)
 
 class DockerContainer:
     def __init__(self):

@@ -106,6 +106,30 @@ export function fuzz_pause_fuzzer(projectId: string){
     })
 }
 
+export function fuzz_stop_fuzzer(projectId: string){
+    let data = {
+        project_id: projectId
+    }
+
+    return request({
+        url: 'project/fuzz/stop',
+        method: 'post',
+        data: data
+    })
+}
+
+export function fuzz_skip_cur_case(projectId: string){
+    let data = {
+        project_id: projectId
+    }
+
+    return request({
+        url: 'project/fuzz/skip',
+        method: 'post',
+        data: data
+    })
+}
+
 export function fuzz_read_cur(projectId: string){
     let data = {
         project_id: projectId

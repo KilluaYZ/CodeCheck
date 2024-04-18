@@ -213,6 +213,45 @@ def fuzzer_pause():
         logger.logger.error(e)
         return build_error_response(code=500, msg='服务器内部错误')
 
+@bp.route('/fuzz/stop', methods=['POST'])
+def fuzzer_stop():
+    try:
+        project_id = request.json.get('project_id')
+        checkFrontendArgsIsNotNone(
+            [
+                {"key": "project_id", "val": project_id},
+            ]
+        )
+        user = check_user_before_request(request)
+        res = mrequests.fuzzer_stop(project_id)
+        mongo.update_one("Project", {"_id": ObjectId(project_id)}, {"$set": {"status": "stop"}})
+        return build_success_response(res)
+
+    except NetworkException as e:
+        return build_error_response(code=e.code, msg=e.msg)
+    except Exception as e:
+        logger.logger.error(e)
+        return build_error_response(code=500, msg='服务器内部错误')
+
+@bp.route('/fuzz/skip', methods=['POST'])
+def fuzzer_skip():
+    try:
+        project_id = request.json.get('project_id')
+        checkFrontendArgsIsNotNone(
+            [
+                {"key": "project_id", "val": project_id},
+            ]
+        )
+        user = check_user_before_request(request)
+        res = mrequests.fuzzer_skip_cur_case(project_id)
+        return build_success_response(res)
+
+    except NetworkException as e:
+        return build_error_response(code=e.code, msg=e.msg)
+    except Exception as e:
+        logger.logger.error(e)
+        return build_error_response(code=500, msg='服务器内部错误')
+
 @bp.route('/fuzz/start', methods=['POST'])
 def fuzzer_start():
     try:
@@ -247,7 +286,8 @@ def fuzzer_start():
         binary_cov_path = project_obj['binary_cov_path']
         binary_args = project_obj['binary_args']
 
-        # container_obj.execute_async(f"cd /share && /share/afl-fuzz -m none -z exp -c 45m -i {input_path} -o {output_path} {binary_path} {binary_cov_path} {binary_args} &")
+        container_obj.execute_async(f"/bin/bash /root/run_fuzz.sh {input_path} {output_path} {binary_path} {binary_args}")
+        mongo.update_one("Project", {"_id": ObjectId(project_id)}, {"$set": {"status": "running"}})
 
         return build_success_response()
 
@@ -326,7 +366,7 @@ def fuzzer_write_cur():
             ]
         )
         user = check_user_before_request(request)
-        res = mrequests.fuzzer_write_cur(project_id)
+        res = mrequests.fuzzer_write_cur(project_id, queue_cur)
         return build_success_response(res)
 
     except NetworkException as e:

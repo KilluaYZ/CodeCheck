@@ -17,7 +17,6 @@ def post(url: str, data: dict) -> dict:
     }
     try:
         res = requests.post(url, data=json.dumps(data), headers=headers).json()
-        print(res)
         if(res['statusCode'] != 200):
             raise Exception(res['message'])
         return res
@@ -44,6 +43,18 @@ def fuzzer_resume(fuzzer_id: str) -> dict:
         "fuzzer_id": fuzzer_id,
     }
     return post(f"{FUZZER_SERVER_HOST}/resume", data=data)
+
+def fuzzer_stop(fuzzer_id: str) -> dict:
+    data = {
+        "fuzzer_id": fuzzer_id,
+    }
+    return post(f"{FUZZER_SERVER_HOST}/stop", data=data)
+
+def fuzzer_skip_cur_case(fuzzer_id: str) -> dict:
+    data = {
+        "fuzzer_id": fuzzer_id,
+    }
+    return post(f"{FUZZER_SERVER_HOST}/skip", data=data)
 
 def fuzzer_read_all(fuzzer_id: str) -> dict:
     data = {

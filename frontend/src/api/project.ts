@@ -192,3 +192,16 @@ export function fuzz_write_by_id(projectId: string, modify_queue_entry_idx: numb
         data: data
     })
 }
+
+export function fuzz_target_case_by_id(projectId: string, target_queue_entry_idx: number){
+    let data = {
+        project_id: projectId,
+        target_queue_entry_idx: target_queue_entry_idx
+    }
+
+    return request({
+        url: 'project/fuzz/fuzzbyid',
+        method: 'post',
+        data: data
+    })
+}

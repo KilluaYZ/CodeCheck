@@ -88,7 +88,7 @@
                             <el-button :disabled="project_info.status != 'running'" type="warning" size="large" plain @click="onClickSkipCurCaseBtn"><el-icon><DArrowRight /></el-icon>跳过当前种子</el-button>
                         </el-row>
                         <el-row>
-                            <el-button :disabled="project_info.status == 'running'" type="success" size="large" @click="onClickStartFuzzerBtn"><el-icon><VideoPlay /></el-icon>启动Fuzz</el-button>
+                            <el-button :disabled="project_info.status == 'running'" type="primary" size="large" @click="onClickStartFuzzerBtn"><el-icon><Link /></el-icon>连接Fuzz</el-button>
                             <el-button :disabled="project_info.status != 'running'" type="danger" size="large" @click="onClickStopFuzzerBtn"><el-icon><VideoPause /></el-icon>停止Fuzz</el-button>
                             <el-button :disabled="project_info.status == 'running'" type="info" size="large" @click="onClickConfigProjectBtn"><el-icon><Setting /></el-icon>配置Fuzz</el-button>
                         </el-row>
@@ -135,12 +135,12 @@
                             border
                             strip
                         >
-                            <el-table-column min-width="450" prop="fname" label="fname"/>
+                            <el-table-column sortable min-width="450" prop="fname" label="fname"/>
                             <el-table-column min-width="100" prop="favored" label="favored"/>
                             <el-table-column min-width="120" prop="was_fuzzed" label="was_fuzzed"/>
-                            <el-table-column min-width="200" prop="distance" label="distance"/>
-                            <el-table-column min-width="100" prop="perf_score" label="perf_score"/>
-                            <el-table-column min-width="180" prop="user_set_perf_score" label="user_set_perf_score"/>
+                            <el-table-column sortable min-width="200" prop="distance" label="distance"/>
+                            <el-table-column sortable min-width="100" prop="perf_score" label="perf_score"/>
+                            <el-table-column sortable min-width="180" prop="user_set_perf_score" label="user_set_perf_score"/>
                             <el-table-column min-width="60" prop="len" label="len"/>
                             <el-table-column min-width="100" prop="cal_failed" label="cal_failed"/>
                             <el-table-column min-width="100" prop="trim_done" label="trim_done"/>
@@ -152,13 +152,22 @@
                             <el-table-column min-width="100" prop="depth" label="depth"/>
                             <el-table-column fixed="right" label="Operation" width="120">
                                 <template #default="scope">
-                                    <el-button
-                                        link
-                                        type="primary"
-                                        size="small"
-                                        @click.prevent="onClickEditQueueEntryBtn(scope.$index, scope.row)">
-                                        修改
-                                    </el-button>
+                                    <el-row style="width: 100%; flex-direction: column; justify-content: center; align-items: center">
+                                        <el-button
+                                            link
+                                            type="primary"
+                                            size="small"
+                                            @click.prevent="onClickEditQueueEntryBtn(scope.$index, scope.row)">
+                                            修改
+                                        </el-button>
+                                        <el-button
+                                            link
+                                            type="success"
+                                            size="small"
+                                            @click.prevent="onClickFuzzTargetBtn(scope.$index)">
+                                            fuzz该种子
+                                        </el-button>
+                                    </el-row>
                                 </template>
                             </el-table-column>
                         </el-table>
@@ -258,8 +267,8 @@
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { FuzzStatType, ProjectType, QueueEntryType } from '@/types'
-import { getProjectDetail, configProject, fuzz_start_fuzzer, fuzz_write_by_id, fuzz_write_cur, fuzz_read_cur, fuzz_read_stat, fuzz_read_queue, fuzz_add_fuzzer, fuzz_resume_fuzzer, fuzz_pause_fuzzer, fuzz_stop_fuzzer, fuzz_skip_cur_case } from '@/api/project'
-import { DArrowRight, EditPen, Refresh, Setting, VideoPause, VideoPlay } from '@element-plus/icons-vue'
+import { getProjectDetail, configProject, fuzz_start_fuzzer, fuzz_write_by_id, fuzz_write_cur, fuzz_read_cur, fuzz_read_stat, fuzz_read_queue, fuzz_add_fuzzer, fuzz_resume_fuzzer, fuzz_pause_fuzzer, fuzz_stop_fuzzer, fuzz_skip_cur_case, fuzz_target_case_by_id } from '@/api/project'
+import { DArrowRight, EditPen, Link, Refresh, Setting, VideoPause, VideoPlay } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 
 const router = useRouter();
@@ -591,42 +600,16 @@ const onClickSkipCurCaseBtn = () =>{
         })
 }
 
-// {
-//     run_time: "0 days, 9 hrs, 47 min, 43 sec",
-//     last_new_path: "0 days, 0 hrs, 47 min, 31 sec",
-//     last_uniq_crash: "0 days, 3 hrs, 39 min, 58 sec",
-//     last_uniq_hang: "none seen yet",
-//     cycles_done: "97",
-//     total_path: "101",
-//     uniq_crashes: "8",
-//     uniq_hangs: "0",
-//     now_processing: "71* (70.30%)",
-//     paths_timed_out: "0 (0.00%)",
-//     map_density: "0.29% / 0.36%",
-//     count_coverage: "3.65 bits/tuple",
-//     now_trying: "splice 1",
-//     stage_execs: "66/240 (27.50%)",
-//     total_execs: "5.79M",
-//     exec_speed: "115.3/sec",
-//     favored_paths: "10 (9.90%)",
-//     new_edges_on: "16 (15.84%)",
-//     total_crashes: "4567 (8 unique)",
-//     total_tmouts: "3177 (15 unique)",
-//     bit_flips: "n/a, n/a, n/a",
-//     byte_flips: "n/a, n/a, n/a",
-//     arithmetics: "n/a, n/a, n/a",
-//     known_inis: "n/a, n/a, n/a",
-//     dictionary: "n/a, n/a, n/a",
-//     havoc: "55/2.08M, 53/3.68M",
-//     trim: "28.22%/41.9k, n/a",
-//     levels: "24",
-//     pending: "0",
-//     pend_fav: "0",
-//     own_finds: "100",
-//     imported: "n/a",
-//     stability: "100.00%",
-//     cpu: "cpu: 20%"
-// }
+const onClickFuzzTargetBtn = (target_queue_entry_idx: number) => {
+    fuzz_target_case_by_id(projectId, target_queue_entry_idx)
+        .then(res => {
+            ElMessage({
+                type: "success",
+                message: res.msg
+            })
+        })
+}
+
 </script>
 
 <style>

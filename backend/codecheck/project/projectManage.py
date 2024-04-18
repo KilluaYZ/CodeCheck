@@ -286,7 +286,7 @@ def fuzzer_start():
         binary_cov_path = project_obj['binary_cov_path']
         binary_args = project_obj['binary_args']
 
-        container_obj.execute_async(f"/bin/bash /root/run_fuzz.sh {input_path} {output_path} {binary_path} {binary_args}")
+        # container_obj.execute_async(f"/bin/bash /root/run_fuzz.sh {input_path} {output_path} {binary_path} {binary_args}")
         mongo.update_one("Project", {"_id": ObjectId(project_id)}, {"$set": {"status": "running"}})
 
         return build_success_response()
@@ -390,6 +390,27 @@ def fuzzer_write_by_id():
         )
         user = check_user_before_request(request)
         res = mrequests.fuzzer_write_by_id(project_id, modify_queue_entry_idx, modify_queue_entry)
+        return build_success_response(res)
+
+    except NetworkException as e:
+        return build_error_response(code=e.code, msg=e.msg)
+    except Exception as e:
+        logger.logger.error(e)
+        return build_error_response(code=500, msg='服务器内部错误')
+
+@bp.route('/fuzz/fuzzbyid', methods=['POST'])
+def fuzzer_fuzz_target_case_by_id():
+    try:
+        project_id = request.json.get('project_id')
+        target_queue_entry_idx = request.json.get('target_queue_entry_idx')
+        checkFrontendArgsIsNotNone(
+            [
+                {"key": "project_id", "val": project_id},
+                {"key": "target_queue_entry_idx", "val": target_queue_entry_idx},
+            ]
+        )
+        user = check_user_before_request(request)
+        res = mrequests.fuzzer_target_by_id(project_id, target_queue_entry_idx)
         return build_success_response(res)
 
     except NetworkException as e:

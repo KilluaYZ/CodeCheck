@@ -102,3 +102,10 @@ def fuzzer_write_by_id(fuzzer_id: str, modify_queue_entry_idx: int, modify_queue
         "modify_queue_entry_idx": modify_queue_entry_idx
     }
     return post(f"{FUZZER_SERVER_HOST}/write/byid", data=data)
+
+def fuzzer_target_by_id(fuzzer_id: str, target_queue_entry_idx: int) -> dict:
+    data = {
+        "fuzzer_id": fuzzer_id,
+        "target_queue_entry_idx": target_queue_entry_idx
+    }
+    return post(f"{FUZZER_SERVER_HOST}/fuzzbyid", data=data)

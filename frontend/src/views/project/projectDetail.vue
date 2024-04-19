@@ -119,6 +119,7 @@
                             <el-descriptions-item  label="distance">{{queue_cur.distance}}</el-descriptions-item>
                             <el-descriptions-item  label="perf_score">{{queue_cur.perf_score}}</el-descriptions-item>
                             <el-descriptions-item  label="user_set_perf_score">{{queue_cur.user_set_perf_score}}</el-descriptions-item>
+                            <el-descriptions-item  label="target_coverage_score">{{queue_cur.target_coverage_score}}</el-descriptions-item>
                         </el-descriptions>
                     </el-row>
                 </el-row>
@@ -139,6 +140,7 @@
                             <el-table-column min-width="100" prop="favored" label="favored"/>
                             <el-table-column min-width="120" prop="was_fuzzed" label="was_fuzzed"/>
                             <el-table-column sortable min-width="200" prop="distance" label="distance"/>
+                            <el-table-column sortable min-width="100" prop="target_coverage_score" label="target_cov"/>
                             <el-table-column sortable min-width="100" prop="perf_score" label="perf_score"/>
                             <el-table-column sortable min-width="180" prop="user_set_perf_score" label="user_set_perf_score"/>
                             <el-table-column min-width="60" prop="len" label="len"/>
@@ -287,7 +289,8 @@ const project_info = ref<ProjectType>({
     binary_cov_path: '',
     output_path: '',
     input_path: '',
-    binary_args: ''
+    binary_args: '',
+    target_path: ''
 });
 const fuzz_stat = ref<FuzzStatType>({
     run_time: "",
@@ -327,7 +330,7 @@ const fuzz_stat = ref<FuzzStatType>({
 });
 
 const queue_cur = ref<QueueEntryType>({
-    fname: "",
+    fname: '',
     len: 0,
     cal_failed: 0,
     trim_done: 0,
@@ -342,6 +345,7 @@ const queue_cur = ref<QueueEntryType>({
     distance: 0,
     perf_score: 0,
     user_set_perf_score: 0,
+    target_coverage_score: 0
 });
 
 const queue_table_data = ref<QueueEntryType[]>([])
@@ -360,7 +364,8 @@ const configForm = ref<ProjectType>({
     binary_cov_path: '',
     output_path: '',
     input_path: '',
-    binary_args: ''
+    binary_args: '',
+    target_path: ''
 })
 
 const queueEditForm = ref<QueueEntryType>({
@@ -378,7 +383,8 @@ const queueEditForm = ref<QueueEntryType>({
     depth: 0,
     distance: 0,
     perf_score: 0,
-    user_set_perf_score: 0
+    user_set_perf_score: 0,
+    target_coverage_score: 0
 })
 
 const EditQueueEntryDialogVisible = ref(false)

@@ -155,7 +155,7 @@ class DockerManager:
         container.create_time = datetime.datetime.now()
         row = mongo.insert_one("Container", container.to_dict())
         _id = row.inserted_id
-        container.share_dir = f"{self.share_dir}/{str(_id)}"
+        container.share_dir = f"{self.share_dir}/{str(_id)}/share"
         mongo.update_one("Container", {"_id": _id}, {"$set":{"share_dir": container.share_dir}})
         os.makedirs(container.share_dir, exist_ok=True)
         container_obj = self.client.containers.run(

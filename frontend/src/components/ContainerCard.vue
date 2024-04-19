@@ -5,8 +5,8 @@
                <el-col span=20>
                    <el-row align='middle'>
                        <span style='font-size: 24px;margin-right: 10px'>{{name}}</span>
-                       <el-tag v-if='stage==="stop"' type='warning'>未运行</el-tag>
-                       <el-tag v-else-if='stage==="exited"' type='danger' >已结束</el-tag>
+                       <el-tag v-if='stage==="stop"' type='info'>未运行</el-tag>
+                       <el-tag v-else-if='stage==="exited"' type='info' >已结束</el-tag>
                        <el-tag v-else-if='stage==="running"' type='success' >正在运行</el-tag>
                        <el-tag v-else type='info'>未知状态</el-tag>
                    </el-row>
@@ -22,6 +22,7 @@
             <el-row style="flex-direction: column">
                 <el-statistic group-separator="" title="ssh端口号" :value="ssh_port" />
                 <el-statistic group-separator="" title="ws端口号" :value="ws_port" />
+                <el-statistic title="id" :value="id.substring(0,10)" />
                 <el-statistic title="容器id" :value="container_id.substring(0,10)" />
             </el-row>
         </el-row>

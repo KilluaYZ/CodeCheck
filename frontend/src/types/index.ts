@@ -35,7 +35,8 @@ export type ProjectType = {
 	binary_cov_path: string,
 	output_path: string,
 	input_path: string,
-	binary_args: string
+	binary_args: string,
+	target_path: string
 };
 
 export type ContainerType = {
@@ -104,4 +105,5 @@ export type QueueEntryType = {
 	distance: number,
 	perf_score: number,
 	user_set_perf_score: number,
+	target_coverage_score: number
 };

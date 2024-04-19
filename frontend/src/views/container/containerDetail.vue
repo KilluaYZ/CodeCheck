@@ -1,12 +1,12 @@
 <template>
     <el-row style="width: 100%; height: 100%; justify-content: space-around; align-items: center; padding: 30px 50px 30px 50px">
-        <el-row class="card-eff" style="width: fit-content; height: 100%; border-radius: 10px; background: #293c4b">
+        <el-row class="card-eff" style="width: fit-content; height: fit-content; border-radius: 10px; background: #293c4b">
             <el-row style="margin: 20px" class="terminal">
                 <div ref="xterm" class="xterm"></div>
             </el-row>
         </el-row>
-        <el-row style="justify-content: center; align-items: center; flex-direction: column">
-            <el-row v-if="container_info" class="card-eff" style="border-radius: 10px">
+        <el-row style="justify-content: center; align-items: center; flex-direction: column;">
+            <el-row v-if="container_info" class="card-eff" style="border-radius: 10px; background: #ffffff;">
                 <el-row style="margin: 10px 15px 10px 15px;">
                     <el-descriptions title="容器信息" :column="1" size="large">
                         <el-descriptions-item label="容器名">{{container_info.name}}</el-descriptions-item>
@@ -82,8 +82,8 @@ onMounted(() => {
 <style scoped lang='scss'>
 .xterm {
     width: 700px;
-    //height: 500px;
-    height: 100%;
+    height: 500px;
+    //height: 100%;
 }
 
 .card-eff{

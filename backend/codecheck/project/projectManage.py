@@ -12,9 +12,14 @@ from codecheck.utils.Logger import logger
 import datetime
 from codecheck.container.DockerManager import DockerManager, DockerContainer
 import codecheck.utils.requests as mrequests
+from codecheck.analyser.TargetCoverage import cal_target_coverage
+import subprocess
 import shutil
+import os
 bp = Blueprint('project', __name__, url_prefix='/project')
 mongo = Mongo()
+
+TargetCoverageMap = {}
 
 @bp.route('/add', methods=['POST'])
 def add_project():
@@ -38,7 +43,8 @@ def add_project():
             "binary_cov_path": "",
             "output_path": "",
             "input_path": "",
-            "binary_args": ""
+            "binary_args": "",
+            "target_path": "",
             })
         _id = row.inserted_id
         project = mongo.find_one('Project',{"_id": _id})
@@ -59,7 +65,7 @@ def config_project():
         output_path = request.json.get('output_path')
         input_path = request.json.get('input_path')
         binary_args = request.json.get('binary_args')
-
+        target_path = request.json.get('target_path')
         checkFrontendArgsIsNotNone(
             [
                 {"key": "project_id", "val": project_id},
@@ -68,6 +74,7 @@ def config_project():
                 {"key": "output_path", "val": output_path},
                 {"key": "input_path", "val": input_path},
                 {"key": "binary_args", "val": binary_args},
+                {"key": "target_path", "val": target_path},
             ]
         )
         user = check_user_before_request(request)
@@ -78,6 +85,7 @@ def config_project():
             "output_path": output_path,
             "input_path": input_path,
             "binary_args": binary_args,
+            "target_path": target_path,
         }})
         return build_success_response()
 
@@ -139,6 +147,19 @@ def get_project():
     except Exception as e:
         logger.logger.error(e)
         return build_error_response(code=500, msg='服务器内部错误')
+
+def get_case_id(case_obj: dict)->int:
+    fname = case_obj['fname']
+    return int(fname.replace('\\','/').split('/')[-1].split(',')[0].split(':')[-1])
+
+def get_target_coverage(project_obj: dict, case_obj: dict, container_obj: DockerContainer) -> int:
+    project_id = str(project_obj['_id'])
+    if project_id not in TargetCoverageMap:
+        TargetCoverageMap[project_id] = {}
+    case_id = get_case_id(case_obj)
+    if case_id not in TargetCoverageMap[project_id]:
+        TargetCoverageMap[project_id][case_id] = cal_target_coverage(project_obj, case_obj, container_obj)
+    return TargetCoverageMap[project_id][case_id]
 
 @bp.route('/fuzz/add', methods=['POST'])
 def fuzzer_add_fuzzer():
@@ -225,6 +246,7 @@ def fuzzer_stop():
         user = check_user_before_request(request)
         res = mrequests.fuzzer_stop(project_id)
         mongo.update_one("Project", {"_id": ObjectId(project_id)}, {"$set": {"status": "stop"}})
+        TargetCoverageMap[project_id] = {}
         return build_success_response(res)
 
     except NetworkException as e:
@@ -308,6 +330,11 @@ def fuzzer_read_cur():
         )
         user = check_user_before_request(request)
         res = mrequests.fuzzer_read_cur(project_id)
+        project_obj = mongo.find_one("Project", {"_id": ObjectId(project_id)})
+        dm = DockerManager()
+        container_obj = dm.get_container(project_obj['container_id'])
+        target_coverage_score = get_target_coverage(project_obj, res, container_obj)
+        res['target_coverage_score'] = target_coverage_score
         return build_success_response(res)
 
     except NetworkException as e:
@@ -327,6 +354,13 @@ def fuzzer_read_queue():
         )
         user = check_user_before_request(request)
         res = mrequests.fuzzer_read_queue(project_id)
+        project_obj = mongo.find_one("Project", {"_id": ObjectId(project_id)})
+        dm = DockerManager()
+        container_obj = dm.get_container(project_obj['container_id'])
+        for i in range(len(res)):
+            target_coverage_score = get_target_coverage(project_obj, res[i], container_obj)
+            res[i]['target_coverage_score'] = target_coverage_score
+
         return build_success_response(res)
 
     except NetworkException as e:

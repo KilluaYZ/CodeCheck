@@ -5,9 +5,9 @@
                <el-col span=20>
                    <el-row align='middle'>
                        <span style='font-size: 24px;margin-right: 10px'>{{name}}</span>
-                       <el-tag v-if='stage==="stop"' type='warning'>未运行</el-tag>
+                       <el-tag v-if='stage==="stop"' type='info'>未运行</el-tag>
                        <el-tag v-else-if='stage==="error"' type='danger' >出现错误</el-tag>
-                       <el-tag v-else-if='stage==="running"' type='info' >正在运行</el-tag>
+                       <el-tag v-else-if='stage==="running"' type='success' >正在运行</el-tag>
                        <el-tag v-else type='info'>未知状态</el-tag>
                    </el-row>
                </el-col>

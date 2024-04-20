@@ -96,7 +96,7 @@ def cal_target_coverage(project_obj: dict, case_obj: dict, container_obj: Docker
         profdata_file_path_in_container = f"/share/codecheck.profdata"
         container_obj.execute(f'LLVM_PROFILE_FILE={profraw_file_path_in_container} {binary_cov_path} {binary_args} ')
         container_obj.execute(f'/root/llvm-tools/llvm-profdata merge -sparse {profraw_file_path_in_container} -o {profdata_file_path_in_container} ')
-        container_obj.execute(f'/root/llvm-tools/llvm-cov {binary_cov_path} -instr-profile={profdata_file_path_in_container} -format=text -output-dir=/share/cov_text/ ')
+        container_obj.execute(f'/root/llvm-tools/llvm-cov show {binary_cov_path} -instr-profile={profdata_file_path_in_container} -format=text -output-dir=/share/cov_text/ ')
 
         text_root_path = f'{container_obj.share_dir}/share/cov_text/'
         if not os.path.exists(f"{text_root_path}/index.txt"):
